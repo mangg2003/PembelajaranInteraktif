@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Petualangan Belajar Kiko - Aplikasi Edukasi SD</title>
+    <!-- Tailwind CSS untuk Styling Premium -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts: Baloo 2 untuk kesan bersahabat dan ramah anak -->
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti untuk perayaan ketika naik level/menang kuis -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Baloo 2', cursive, sans-serif;
+            background-color: #f0f9ff;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .bouncing-effect {
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .dot-pulse {
+            animation: pulse 1.2s infinite ease-in-out;
+        }
+        .dot-pulse:nth-child(2) { animation-delay: 0.2s; }
+        .dot-pulse:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes pulse {
+            0%, 100% { transform: scale(0.6); opacity: 0.4; }
+            50% { transform: scale(1.2); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col overflow-x-hidden text-slate-800 selection:bg-teal-200">
+
+    <!-- Header / Navbar Utama -->
+    <header class="bg-gradient-to-r from-teal-400 via-cyan-400 to-blue-500 text-white shadow-md px-4 py-3 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <!-- Logo & Karakter -->
+            <div class="flex items-center space-x-2.5 cursor-pointer" onclick="changeZone('dashboard')">
+                <div class="bg-white p-1 rounded-full shadow-md bouncing-effect">
+                    <!-- Robot Avatar SVG -->
+                    <svg class="w-9 h-9 text-teal-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <rect x="3" y="11" width="18" height="10" rx="2" fill="#2dd4bf" stroke="#fff"></rect>
+                        <circle cx="12" cy="5" r="2" fill="#facc15"></circle>
+                        <path d="M12 7v4M8 15h.01M16 15h.01M9 18h6" stroke-linecap="round"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-extrabold tracking-wider leading-none">KIKO ADVENTURE</h1>
+                    <span class="text-[10px] font-semibold text-teal-100">Sahabat Pintar Kiko 🚀</span>
+                </div>
+            </div>
+
+            <!-- Gamifikasi Info / Bar Skor -->
+            <div class="flex items-center space-x-2">
+                <div class="flex items-center space-x-2 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full border border-white/30 text-xs sm:text-sm">
+                    <!-- Level -->
+                    <div class="flex items-center space-x-1">
+                        <span class="text-yellow-300 font-bold">LV.</span>
+                        <span id="player-level" class="font-extrabold text-white">1</span>
+                    </div>
+                    <!-- XP Bar -->
+                    <div class="hidden sm:block w-20 bg-blue-950/30 rounded-full h-2.5 overflow-hidden">
+                        <div id="player-xp-bar" class="bg-gradient-to-r from-yellow-400 to-amber-500 h-full rounded-full transition-all duration-500" style="width: 10%"></div>
+                    </div>
+                    <!-- Koin -->
+                    <div class="flex items-center space-x-1">
+                        <span class="text-amber-300">🪙</span>
+                        <span id="player-coins" class="font-extrabold text-white">100</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Kontainer Utama Aplikasi -->
+    <main class="flex-grow max-w-6xl w-full mx-auto p-3 sm:p-4 flex flex-col justify-start">
+
+        <!-- Notifikasi Kustom / Feedback System -->
+        <div id="toast-message" class="hidden fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl z-50 flex items-center space-x-2 transition-all duration-300 translate-y-10">
+            <span id="toast-icon">🎉</span>
+            <span id="toast-text" class="font-bold text-xs sm:text-sm"></span>
+        </div>
+
+        <!-- Custom Modal untuk Info/Alert agar tidak memakai window.alert -->
+        <div id="custom-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center space-y-4 shadow-2xl border border-slate-100 animate-scale-up">
+                <span id="modal-emoji" class="text-5xl block">⚠️</span>
+                <h3 id="modal-title" class="text-xl font-black text-slate-800">Perhatian</h3>
+                <p id="modal-message" class="text-sm text-slate-500 leading-relaxed"></p>
+                <button onclick="closeModal()" class="w-full bg-teal-500 hover:bg-teal-600 text-white font-extrabold py-3 rounded-2xl transition shadow-md shadow-teal-500/10">Oke, Kiko!</button>
+            </div>
+        </div>
+
+        <!-- ZONE 1: DASHBOARD UTAMA -->
+        <section id="zone-dashboard" class="space-y-4 sm:space-y-6">
+            <!-- Kartu Sambutan & Maskot -->
+            <div class="bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600 rounded-3xl p-5 sm:p-6 text-white shadow-lg flex flex-col md:flex-row justify-between items-center relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+                <div class="absolute -left-10 -top-10 w-28 h-28 bg-purple-400/20 rounded-full blur-xl"></div>
+                
+                <div class="space-y-2.5 z-10 text-center md:text-left max-w-lg">
+                    <h2 class="text-2xl sm:text-3xl font-black leading-tight">Halo, Sahabat Kiko! 👋</h2>
+                    <p class="text-indigo-100 text-sm sm:text-base leading-relaxed">Aku Kiko, partner petualanganmu. Mau bertualang seru apa kita hari ini? Pilih salah satu zona belajar di bawah ya!</p>
+                    <div class="flex flex-wrap gap-1.5 justify-center md:justify-start">
+                        <span class="bg-white/20 text-white text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full font-bold">#DeepLearning</span>
+                        <span class="bg-white/20 text-white text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full font-bold">#BelajarMenyenangkan</span>
+                        <span class="bg-white/20 text-white text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full font-bold">#KreativitasTanpaBatas</span>
+                    </div>
+                </div>
+                
+                <!-- Visual Maskot -->
+                <div class="mt-4 md:mt-0 z-10 flex flex-col items-center">
+                    <div class="bg-white/10 p-3 rounded-full border border-white/20 shadow-inner bouncing-effect">
+                        <svg class="w-16 h-16 sm:w-20 sm:h-20 text-yellow-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="10" rx="2" fill="#facc15" stroke="#fff"></rect>
+                            <circle cx="12" cy="5" r="2" fill="#38bdf8"></circle>
+                            <path d="M12 7v4M8 15h.01M16 15h.01M9 18h6" stroke-linecap="round"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigasi Menu Zona Belajar -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                
+                <!-- Card 1: Sahabat AI Kiko -->
+                <button onclick="changeZone('chat')" class="group text-left bg-white p-5 rounded-3xl shadow-sm hover:shadow-md border border-slate-100 hover:border-teal-400 transition-all duration-300 flex flex-col justify-between h-48 relative overflow-hidden">
+                    <div class="absolute right-0 top-0 bg-teal-50 text-teal-400 p-6 rounded-bl-full group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="message-square" class="w-6 h-6"></i>
+                    </div>
+                    <div class="z-10 pr-8">
+                        <span class="bg-teal-100 text-teal-700 text-[10px] font-bold px-2.5 py-0.5 rounded-full">TANYA JAWAB</span>
+                        <h3 class="text-lg font-black mt-2 text-slate-800">Sahabat Kiko</h3>
+                        <p class="text-slate-500 text-xs mt-1">Tanyakan apa saja! Kiko punya segudang jawaban seru.</p>
+                    </div>
+                    <span class="text-teal-500 font-bold text-xs flex items-center space-x-1 group-hover:translate-x-1 transition-transform">
+                        <span>Mulai Obrolan</span> <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                    </span>
+                </button>
+
+                <!-- Card 2: Kuis Pintar AI -->
+                <button onclick="changeZone('quiz')" class="group text-left bg-white p-5 rounded-3xl shadow-sm hover:shadow-md border border-slate-100 hover:border-purple-400 transition-all duration-300 flex flex-col justify-between h-48 relative overflow-hidden">
+                    <div class="absolute right-0 top-0 bg-purple-50 text-purple-400 p-6 rounded-bl-full group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="trophy" class="w-6 h-6"></i>
+                    </div>
+                    <div class="z-10 pr-8">
+                        <span class="bg-purple-100 text-purple-700 text-[10px] font-bold px-2.5 py-0.5 rounded-full">ASAH OTAK</span>
+                        <h3 class="text-lg font-black mt-2 text-slate-800">Kuis Pintar Kiko</h3>
+                        <p class="text-slate-500 text-xs mt-1">Tantang otakmu dengan kuis menarik Bareng Kiko Adventure.</p>
+                    </div>
+                    <span class="text-purple-500 font-bold text-xs flex items-center space-x-1 group-hover:translate-x-1 transition-transform">
+                        <span>Ayo Tantang</span> <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                    </span>
+                </button>
+
+                <!-- Card 3: Cerita Kreatif AI -->
+                <button onclick="changeZone('story')" class="group text-left bg-white p-5 rounded-3xl shadow-sm hover:shadow-md border border-slate-100 hover:border-amber-400 transition-all duration-300 flex flex-col justify-between h-48 relative overflow-hidden">
+                    <div class="absolute right-0 top-0 bg-amber-50 text-amber-400 p-6 rounded-bl-full group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="book-open" class="w-6 h-6"></i>
+                    </div>
+                    <div class="z-10 pr-8">
+                        <span class="bg-amber-100 text-amber-700 text-[10px] font-bold px-2.5 py-0.5 rounded-full">DONGENG</span>
+                        <h3 class="text-lg font-black mt-2 text-slate-800">Cerita Kreatif Kiko</h3>
+                        <p class="text-slate-500 text-xs mt-1">Buat dongeng ajaibmu sendiri yang seru & penuh ilmu.</p>
+                    </div>
+                    <span class="text-amber-500 font-bold text-xs flex items-center space-x-1 group-hover:translate-x-1 transition-transform">
+                        <span>Ayo Membaca</span> <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                    </span>
+                </button>
+
+                <!-- Card 4: Gambar Ajaib AI -->
+                <button onclick="changeZone('image-gen')" class="group text-left bg-white p-5 rounded-3xl shadow-sm hover:shadow-md border border-slate-100 hover:border-pink-400 transition-all duration-300 flex flex-col justify-between h-48 relative overflow-hidden">
+                    <div class="absolute right-0 top-0 bg-pink-50 text-pink-400 p-6 rounded-bl-full group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="palette" class="w-6 h-6"></i>
+                    </div>
+                    <div class="z-10 pr-8">
+                        <span class="bg-pink-100 text-pink-700 text-[10px] font-bold px-2.5 py-0.5 rounded-full">KREATIVITAS</span>
+                        <h3 class="text-lg font-black mt-2 text-slate-800">Foto Ajaib Kiko</h3>
+                        <p class="text-slate-500 text-xs mt-1">Tuangkan coretan kreatifmu, saksikan keajaiban mengubah gambar anak menjadi nyata!</p>
+                    </div>
+                    <span class="text-pink-500 font-bold text-xs flex items-center space-x-1 group-hover:translate-x-1 transition-transform">
+                        <span>Mulai Melukis</span> <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                    </span>
+                </button>
+
+                <!-- Card 5: Mini-Game Balon Matematika -->
+                <button onclick="changeZone('game-balloon')" class="sm:col-span-2 lg:col-span-4 group text-left bg-gradient-to-r from-emerald-400 to-green-500 p-5 rounded-3xl shadow-md hover:shadow-lg transition-all duration-300 flex flex-col sm:flex-row justify-between items-center text-white space-y-4 sm:space-y-0">
+                    <div class="space-y-1 max-w-xl">
+                        <span class="bg-white/25 text-white text-[10px] font-bold px-3 py-0.5 rounded-full">TANTANGAN SERU</span>
+                        <h3 class="text-xl font-black">🕹️ Tantangan Balon Angka Matematika!</h3>
+                        <p class="text-emerald-50 text-xs sm:text-sm">Pecahkan balon berisi jawaban benar sebelum menabrak duri! Dapatkan skor, koin, dan lencana kehormatan.</p>
+                    </div>
+                    <div class="bg-white text-emerald-600 px-6 py-2.5 rounded-2xl font-extrabold text-sm shadow-md group-hover:scale-105 transition-transform">
+                        Main Sekarang! 🎈
+                    </div>
+                </button>
+            </div>
+
+            <!-- Bagian Lencana -->
+            <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
+                <div class="flex items-center space-x-2 mb-4">
+                    <span class="text-xl">🏆</span>
+                    <h3 class="text-base sm:text-lg font-black text-slate-800">Lencana Prestasimu</h3>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="badges-container">
+                    <!-- Ditambahkan secara dinamis -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ZONE 2: CHAT SAHABAT KIKO (AI TUTOR) -->
+        <section id="zone-chat" class="hidden flex-grow flex flex-col gap-3 min-h-[450px]">
+            <div class="flex items-center justify-between">
+                <button onclick="changeZone('dashboard')" class="text-slate-600 hover:text-slate-950 font-bold text-xs flex items-center space-x-1.5">
+                    <i data-lucide="chevron-left" class="w-4 h-4"></i> <span>Kembali ke Beranda</span>
+                </button>
+                <button onclick="clearChatHistory()" class="text-rose-500 hover:text-rose-600 text-xs font-bold flex items-center space-x-1.5">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> <span>Bersihkan</span>
+                </button>
+            </div>
+
+            <div class="flex-grow flex flex-col md:flex-row gap-4 h-[420px] sm:h-[480px]">
+                <!-- Sidebar Tips Tanya -->
+                <div class="hidden md:flex w-60 bg-teal-50/70 p-4 rounded-3xl border border-teal-100/50 flex-col justify-between">
+                    <div class="space-y-3">
+                        <h4 class="font-bold text-teal-800 text-sm flex items-center space-x-1.5">
+                            <i data-lucide="sparkles" class="w-4 h-4"></i>
+                            <span>Saran Pertanyaan</span>
+                        </h4>
+                        <div class="space-y-2">
+                            <button onclick="fillChatMessage('Mengapa langit berwarna biru? 🌌')" class="w-full text-left bg-white hover:bg-teal-100/50 p-2.5 rounded-xl border border-teal-200/50 text-xs font-semibold text-teal-700 transition">🌌 Mengapa langit biru?</button>
+                            <button onclick="fillChatMessage('Bagaimana cara kerja hujan? 🌧️')" class="w-full text-left bg-white hover:bg-teal-100/50 p-2.5 rounded-xl border border-teal-200/50 text-xs font-semibold text-teal-700 transition">🌧️ Cara kerja hujan?</button>
+                            <button onclick="fillChatMessage('Berapa 7 dikali 8 dan tips menghitungnya? 🔢')" class="w-full text-left bg-white hover:bg-teal-100/50 p-2.5 rounded-xl border border-teal-200/50 text-xs font-semibold text-teal-700 transition">🔢 Hitung cepat 7 x 8</button>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-teal-600 font-semibold text-center">Didukung oleh Free AI Engine</p>
+                </div>
+
+                <!-- Chat Arena -->
+                <div class="flex-grow flex flex-col bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-teal-400 to-cyan-500 text-white p-3.5 flex items-center space-x-2">
+                        <span class="bg-white/20 p-1.5 rounded-full"><i data-lucide="message-square" class="w-4 h-4"></i></span>
+                        <div>
+                            <h4 class="font-extrabold text-sm leading-none">Mengobrol Dengan Kiko</h4>
+                            <span class="text-[10px] text-teal-50">Kiko siap menjawab semua pertanyaanmu secara instan!</span>
+                        </div>
+                    </div>
+
+                    <!-- Kolom Riwayat Chat -->
+                    <div id="chat-messages" class="flex-grow p-4 overflow-y-auto space-y-4 custom-scrollbar">
+                        <div class="flex items-start space-x-2.5">
+                            <div class="bg-teal-500 text-white p-1.5 rounded-full shadow-sm text-sm">🤖</div>
+                            <div class="bg-slate-100 rounded-2xl rounded-tl-none p-3 max-w-[85%] text-xs sm:text-sm">
+                                <p class="font-bold text-teal-600 mb-0.5">Kiko Adventure</p>
+                                Halo Sahabat Kiko! 🌟 Aku Kiko. Kamu mau tahu atau bertanya tentang apa hari ini? Tanyakan saja padaku ya!
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Input Chat -->
+                    <div class="p-3 bg-slate-50 border-t border-slate-100 flex items-center space-x-2">
+                        <input type="text" id="chat-input" placeholder="Tanyakan apa saja ke Kiko..." class="flex-grow bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-teal-400" onkeypress="handleChatKeyPress(event)">
+                        <button onclick="sendChatMessage()" id="chat-send-btn" class="bg-teal-500 hover:bg-teal-600 text-white p-2.5 rounded-xl shadow-md transition">
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ZONE 3: KUIS PINTAR AI -->
+        <section id="zone-quiz" class="hidden flex-grow flex flex-col bg-white rounded-3xl shadow-sm border border-slate-100 p-5 min-h-[400px]">
+            <!-- Setup Kuis -->
+            <div id="quiz-setup" class="space-y-5 max-w-lg mx-auto w-full py-4">
+                <div class="text-center space-y-1">
+                    <span class="text-4xl">🎯</span>
+                    <h2 class="text-xl sm:text-2xl font-black text-slate-800">Petualangan Kuis Pintar Kiko </h2>
+                    <p class="text-slate-500 text-xs sm:text-sm">Pilih topik kuis kesukaanmu, dan kita bakal langsung seru-seruan bareng tantangan khususnya!</p>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-xs sm:text-sm font-bold text-slate-700">Pilih Topik Kuis:</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="selectQuizTopic('Tata Surya & Planet')" class="quiz-topic-btn border-2 border-slate-200 rounded-2xl p-3 text-center font-bold text-xs hover:border-purple-400 hover:bg-purple-50 transition">🌌 Tata Surya</button>
+                        <button onclick="selectQuizTopic('Dunia Hewan Sejarah')" class="quiz-topic-btn border-2 border-slate-200 rounded-2xl p-3 text-center font-bold text-xs hover:border-purple-400 hover:bg-purple-50 transition">🦁 Dunia Hewan</button>
+                        <button onclick="selectQuizTopic('Matematika Gembira SD')" class="quiz-topic-btn border-2 border-slate-200 rounded-2xl p-3 text-center font-bold text-xs hover:border-purple-400 hover:bg-purple-50 transition">🔢 Matematika</button>
+                        <button onclick="selectQuizTopic('Sains & Eksperimen')" class="quiz-topic-btn border-2 border-slate-200 rounded-2xl p-3 text-center font-bold text-xs hover:border-purple-400 hover:bg-purple-50 transition">🧪 Sains Seru</button>
+                    </div>
+                    <div class="mt-2">
+                        <label class="block text-[10px] font-bold text-slate-500 mb-1">Atau ketik topik sendiri secara bebas:</label>
+                        <input type="text" id="custom-quiz-topic" placeholder="Contoh: Dinosaurus, Kerajaan Majapahit" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-400">
+                    </div>
+                </div>
+
+                <button onclick="startQuizGeneration()" class="w-full bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-extrabold py-3.5 rounded-2xl shadow-md hover:opacity-90 transition flex items-center justify-center space-x-2">
+                    <i data-lucide="play" class="w-4 h-4"></i> <span>Mulai Bikin Kuis Ajaib!</span>
+                </button>
+                <button onclick="changeZone('dashboard')" class="w-full text-center text-slate-400 hover:text-slate-600 font-bold text-xs transition">Kembali ke Beranda</button>
+            </div>
+
+            <!-- Loader Kuis -->
+            <div id="quiz-loading" class="hidden flex-col items-center justify-center space-y-4 py-16">
+                <div class="w-12 h-12 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
+                <div class="text-center">
+                    <p class="font-extrabold text-slate-700 text-sm sm:text-base">Kiko Sedang Meracik Soal Kuis...</p>
+                    <p class="text-slate-400 text-xs">AI kami sedang memproses pertanyaan ceria untukmu!</p>
+                </div>
+            </div>
+
+            <!-- Tampilan Soal Kuis -->
+            <div id="quiz-play" class="hidden space-y-4 max-w-lg mx-auto w-full py-2">
+                <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                    <span class="text-purple-600 font-extrabold text-xs sm:text-sm" id="quiz-progress-text">Soal 1 dari 5</span>
+                    <span class="bg-purple-100 text-purple-700 px-3 py-0.5 rounded-full text-[10px] font-bold" id="quiz-genre-badge">Sains</span>
+                </div>
+
+                <div class="bg-purple-50/50 border border-purple-100 rounded-2xl p-4 sm:p-5 text-center">
+                    <h3 class="text-base sm:text-lg font-black text-slate-800 leading-snug" id="quiz-question-text">Memuat pertanyaan...</h3>
+                </div>
+
+                <div class="grid grid-cols-1 gap-2.5" id="quiz-options-container">
+                    <!-- Diisi dinamis -->
+                </div>
+
+                <div class="flex justify-end pt-2">
+                    <button id="quiz-next-btn" onclick="nextQuizQuestion()" class="hidden bg-purple-600 text-white font-bold px-5 py-2 rounded-xl shadow hover:bg-purple-700 transition flex items-center space-x-1 text-xs">
+                        <span>Lanjut</span> <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Hasil Kuis -->
+            <div id="quiz-result" class="hidden text-center space-y-5 max-w-sm mx-auto py-8">
+                <div class="space-y-1">
+                    <span class="text-5xl" id="quiz-result-emoji">🎉</span>
+                    <h2 class="text-2xl font-black text-slate-800" id="quiz-result-title">Hebat Sekali!</h2>
+                    <p class="text-slate-500 text-xs sm:text-sm" id="quiz-result-subtitle">Kamu telah menyelesaikan tantangan dengan baik.</p>
+                </div>
+
+                <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4 grid grid-cols-2 gap-2 shadow-inner">
+                    <div class="border-r border-slate-200">
+                        <p class="text-[10px] text-slate-400 font-bold uppercase">Skor Kamu</p>
+                        <p class="text-2xl font-black text-indigo-600" id="quiz-final-score">80/100</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase">Bonus Koin</p>
+                        <p class="text-2xl font-black text-amber-500" id="quiz-coin-reward">+15 🪙</p>
+                    </div>
+                </div>
+
+                <div class="flex space-x-2">
+                    <button onclick="changeZone('quiz')" class="flex-1 bg-purple-600 text-white font-bold py-2.5 rounded-xl text-xs sm:text-sm shadow">Main Lagi</button>
+                    <button onclick="changeZone('dashboard')" class="flex-1 bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs sm:text-sm">Kembali</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ZONE 4: CERITA PETUALANGAN AI -->
+        <section id="zone-story" class="hidden flex-grow flex flex-col bg-white rounded-3xl shadow-sm border border-slate-100 p-4 sm:p-5 min-h-[450px]">
+            <!-- Setup Cerita -->
+            <div id="story-setup" class="space-y-5 max-w-lg mx-auto w-full py-4">
+                <div class="text-center space-y-1">
+                    <span class="text-4xl">📚</span>
+                    <h2 class="text-xl sm:text-2xl font-black text-slate-800">Petualangan Dongeng Kreatif Kiko</h2>
+                    <p class="text-slate-500 text-xs sm:text-sm">Pilih latar cerita yang kamu inginkan, lalu Kiko akan merangkai dongeng seru dan interaktif!</p>
+                </div>
+
+                <div class="space-y-3">
+                    <label class="block text-xs sm:text-sm font-bold text-slate-700">Pilih Tema Dongeng:</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="selectStoryTheme('Hutan Ajaib & Satwa Pintar')" class="story-theme-btn border-2 border-slate-200 rounded-2xl p-3 text-center font-bold text-xs hover:border-amber-400 hover:bg-amber-50 transition">🌳 Hutan Ajaib</button>
+                        <button onclick="selectStoryTheme('Misteri Kerajaan Bawah Laut')" class="story-theme-btn border-2 border-slate-200 rounded-2xl p-3 text-center font-bold text-xs hover:border-amber-400 hover:bg-amber-50 transition">🌊 Bawah Laut</button>
+                        <button onclick="selectStoryTheme('Kisah Dinosaurus Cerdas')" class="story-theme-btn border-2 border-slate-200 rounded-2xl p-3 text-center font-bold text-xs hover:border-amber-400 hover:bg-amber-50 transition">🦖 Dinosaurus</button>
+                        <button onclick="selectStoryTheme('Kastil Permen Luar Angkasa')" class="story-theme-btn border-2 border-slate-200 rounded-2xl p-3 text-center font-bold text-xs hover:border-amber-400 hover:bg-amber-50 transition">🚀 Luar Angkasa</button>
+                    </div>
+                    <div class="mt-2">
+                        <label class="block text-[10px] font-bold text-slate-500 mb-1">Atau ketik dongeng impianmu sendiri secara bebas (Request):</label>
+                        <input type="text" id="custom-story-theme" oninput="clearSelectedStoryTheme()" placeholder="Contoh: Petualangan kelinci di negeri cokelat, robot ramah lingkungan" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+                    </div>
+                </div>
+
+                <button onclick="startStoryGeneration()" class="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white font-bold py-3.5 rounded-2xl shadow-md transition flex items-center justify-center space-x-2">
+                    <i data-lucide="book-open" class="w-4 h-4"></i> <span>Tulis Dongeng Kiko!</span>
+                </button>
+                <button onclick="changeZone('dashboard')" class="w-full text-center text-slate-400 hover:text-slate-600 font-bold text-xs transition">Kembali ke Beranda</button>
+            </div>
+
+            <!-- Loader Cerita -->
+            <div id="story-loading" class="hidden flex-col items-center justify-center space-y-4 py-16">
+                <div class="w-12 h-12 border-4 border-amber-200 border-t-amber-500 rounded-full animate-spin"></div>
+                <div class="text-center">
+                    <p class="font-extrabold text-slate-700 text-sm sm:text-base">Kiko Sedang Menulis Dongeng Terindah...</p>
+                    <p class="text-slate-400 text-xs">Menciptakan keajaiban cerita dan wawasan sains untukmu!</p>
+                </div>
+            </div>
+
+            <!-- Tampilan Cerita Utama (MOBILE OPTIMIZED & SCROLLABLE FULL TEXT) -->
+            <div id="story-display" class="hidden flex-grow flex flex-col max-w-xl mx-auto w-full py-1">
+                <div class="text-center mb-3 pb-2 border-b border-slate-100">
+                    <h3 class="text-lg sm:text-xl font-black text-amber-700 leading-tight" id="story-title-text">Memuat Judul...</h3>
+                    <span class="text-[10px] text-slate-400 font-semibold uppercase">Dongeng Dongeng Edukatif Kiko</span>
+                </div>
+
+                <!-- Bagian Isi Cerita (Scrolling Halus, Tanpa Terpotong) -->
+                <div class="bg-amber-50/40 border border-amber-100 rounded-2xl p-4 sm:p-5 max-h-[300px] sm:max-h-[450px] overflow-y-auto mb-3 custom-scrollbar">
+                    <p class="text-xs sm:text-sm text-slate-700 leading-relaxed whitespace-pre-line" id="story-body-text">
+                        Sedang mempersiapkan petualangan...
+                    </p>
+                </div>
+
+                <!-- Kuis Pemahaman Cerita -->
+                <div class="bg-white border border-amber-200 rounded-2xl p-4 shadow-xs" id="story-challenge-box">
+                    <p class="text-[10px] font-bold text-amber-600 uppercase mb-1">🎁 Kuis Pemahaman (Hadiah +20 Koin!)</p>
+                    <h4 class="font-bold text-xs sm:text-sm text-slate-800 mb-2" id="story-question-text">Pertanyaan dari cerita di atas...</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2" id="story-options-container">
+                        <!-- Diisi dinamis -->
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center mt-4">
+                    <button onclick="changeZone('story')" class="text-amber-600 hover:text-amber-800 font-bold text-xs flex items-center space-x-1">
+                        <i data-lucide="chevron-left" class="w-4 h-4"></i> <span>Ganti Dongeng</span>
+                    </button>
+                    <button onclick="finishStoryAdventure()" id="story-finish-btn" class="hidden bg-amber-500 hover:bg-amber-600 text-white font-extrabold px-5 py-2 rounded-xl text-xs transition">
+                        Selesai Membaca! 🌟
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ZONE 5: GENERATOR GAMBAR KREATIF -->
+        <section id="zone-image-gen" class="hidden flex-grow flex flex-col bg-white rounded-3xl shadow-sm border border-slate-100 p-4 sm:p-5 min-h-[450px]">
+            <div class="max-w-lg mx-auto w-full space-y-4 py-2">
+                <div class="text-center space-y-1">
+                    <span class="text-4xl">📸</span>
+                    <h2 class="text-xl sm:text-2xl font-black text-slate-800">Ruang Lukisan Realistis Kiko</h2>
+                    <p class="text-slate-500 text-xs sm:text-sm">Ketik imajinasimu untuk membuat foto asli, lalu hias dengan corat-coret sentuhan kreatifmu!</p>
+                </div>
+
+                <!-- Input Prompt -->
+                <div class="space-y-2">
+                    <label class="block text-xs sm:text-sm font-bold text-slate-700">Yuk, Gambar Keajaiban di Pikiranmu! (Bikin Jadi Foto Beneran):</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="image-prompt-input" placeholder="Contoh: Kucing lucu mengendarai mobil merah di jalan kota asli" class="flex-grow border border-slate-200 rounded-xl px-3 py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-pink-400">
+                        <button onclick="generateAIImage()" class="bg-pink-500 hover:bg-pink-600 text-white font-extrabold px-4 rounded-xl text-xs flex items-center space-x-1">
+                            <i data-lucide="wand" class="w-4 h-4"></i> <span>Ambil Foto</span>
+                        </button>
+                    </div>
+                    <div class="flex flex-wrap gap-1.5 pt-1 items-center">
+                        <span class="text-[10px] text-slate-400 font-bold">Ide Seru Realistis:</span>
+                        <button onclick="fillImagePrompt('Gajah kecil sedang mandi di sungai hutan tropis asli')" class="bg-pink-50 hover:bg-pink-100 text-pink-600 text-[10px] px-2.5 py-0.5 rounded-full font-bold transition">🐘 Gajah di Hutan</button>
+                        <button onclick="fillImagePrompt('Anak anjing golden retriever lucu sedang bermain bola di taman berumput nyata')" class="bg-pink-50 hover:bg-pink-100 text-pink-600 text-[10px] px-2.5 py-0.5 rounded-full font-bold transition">🐶 Anak Anjing di Taman</button>
+                    </div>
+                </div>
+
+                <!-- Toolbar Mewarnai / Menggambar Interaktif -->
+                <div class="bg-slate-50 border border-slate-100 p-3 rounded-2xl space-y-2">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Pilih Krayon:</span>
+                        <div class="flex items-center space-x-1.5" id="color-palette">
+                            <button onclick="setBrushColor('#ef4444', this)" class="w-6 h-6 rounded-full bg-red-500 border-2 border-white ring-2 ring-red-500 scale-110 transition color-swatch"></button>
+                            <button onclick="setBrushColor('#f97316', this)" class="w-6 h-6 rounded-full bg-orange-500 border-2 border-white transition color-swatch"></button>
+                            <button onclick="setBrushColor('#eab308', this)" class="w-6 h-6 rounded-full bg-yellow-500 border-2 border-white transition color-swatch"></button>
+                            <button onclick="setBrushColor('#22c55e', this)" class="w-6 h-6 rounded-full bg-green-500 border-2 border-white transition color-swatch"></button>
+                            <button onclick="setBrushColor('#3b82f6', this)" class="w-6 h-6 rounded-full bg-blue-500 border-2 border-white transition color-swatch"></button>
+                            <button onclick="setBrushColor('#a855f7', this)" class="w-6 h-6 rounded-full bg-purple-500 border-2 border-white transition color-swatch"></button>
+                            <button onclick="setBrushColor('#0f172a', this)" class="w-6 h-6 rounded-full bg-slate-900 border-2 border-white transition color-swatch"></button>
+                            <button onclick="setEraser(this)" class="w-7 h-7 rounded-lg bg-white border border-slate-200 text-xs flex items-center justify-center shadow-xs transition color-swatch" title="Penghapus Corat-Coret">🧽</button>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between gap-4 text-xs">
+                        <div class="flex items-center space-x-2 flex-grow">
+                            <span class="text-[10px] font-bold text-slate-500">Ukuran:</span>
+                            <input type="range" id="brush-size-slider" min="2" max="35" value="8" class="flex-grow h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-pink-500">
+                        </div>
+                        <button onclick="clearCanvasOnly()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-[10px] px-3 py-1 rounded-xl font-bold transition">
+                            Hapus Coretan 🧹
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Arena Gambar Hasil & Menggambar Canvas Interaktif -->
+                <div class="border-2 border-slate-200 rounded-3xl h-72 sm:h-80 flex flex-col items-center justify-center bg-white overflow-hidden relative shadow-inner" id="image-result-box">
+                    <!-- Canvas Menggambar Anak-Anak -->
+                    <canvas id="creative-canvas" width="600" height="600" class="w-full h-full object-contain cursor-crosshair z-10Touch"></canvas>
+
+                    <!-- Loading state -->
+                    <div id="image-loading" class="hidden absolute inset-0 bg-white/95 z-20 flex-col items-center justify-center space-y-2">
+                        <div class="flex justify-center space-x-1 mx-auto my-2">
+                            <span class="w-3.5 h-3.5 bg-pink-500 rounded-full dot-pulse"></span>
+                            <span class="w-3.5 h-3.5 bg-pink-500 rounded-full dot-pulse"></span>
+                            <span class="w-3.5 h-3.5 bg-pink-500 rounded-full dot-pulse"></span>
+                        </div>
+                        <p class="font-bold text-slate-700 text-xs sm:text-sm">Kiko sedang mengambil foto nyata...</p>
+                        <p class="text-slate-400 text-[10px]">Tunggu sebentar ya, AI sedang memproses imajinasimu...</p>
+                    </div>
+                </div>
+
+                <!-- Menu download -->
+                <div class="flex justify-between items-center text-xs">
+                    <button onclick="changeZone('dashboard')" class="text-slate-400 hover:text-slate-600 font-bold">Kembali ke Beranda</button>
+                    <button id="download-image-btn" onclick="saveImageToGallery()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold px-4 py-2 rounded-xl flex items-center space-x-1">
+                        <i data-lucide="download" class="w-3.5 h-3.5"></i> <span>Simpan Hasil Karya</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ZONE 6: MINI GAME BALON ANGKA (MATH CHALLENGE) -->
+        <section id="zone-game" class="hidden flex-grow flex flex-col bg-slate-900 rounded-3xl shadow-lg overflow-hidden border border-slate-800 p-4 relative text-white min-h-[460px]">
+            <!-- Start Game UI overlay -->
+            <div id="game-start-screen" class="absolute inset-0 bg-slate-900/95 z-20 flex flex-col items-center justify-center p-5 text-center space-y-3">
+                <span class="text-4xl animate-bounce">🎈</span>
+                <h2 class="text-2xl font-black text-emerald-400">Balon Angka Matematika!</h2>
+                <p class="text-slate-300 text-xs max-w-sm">Pecahkan balon berisi jawaban matematika yang BENAR di atas layar. Jangan sampai menabrak duri!</p>
+                <div class="bg-slate-800 p-3 rounded-2xl border border-slate-700 text-[10px] text-left space-y-1">
+                    <p class="font-bold text-emerald-300">💡 Aturan Permainan:</p>
+                    <p>• Jawaban Benar = +10 Skor & +5 Koin 🪙</p>
+                    <p>• Jawaban Salah / Menabrak Duri = Nyawa Berkurang ❤️</p>
+                </div>
+                <button onclick="startGameLoop()" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black px-6 py-2.5 rounded-xl text-sm shadow transition">
+                    Mulai Bermain! 🚀
+                </button>
+                <button onclick="changeZone('dashboard')" class="text-slate-400 hover:text-slate-300 font-bold text-xs">Kembali</button>
+            </div>
+
+            <!-- Game Over Screen Overlay -->
+            <div id="game-over-screen" class="hidden absolute inset-0 bg-slate-950/95 z-20 flex flex-col items-center justify-center p-5 text-center space-y-3">
+                <span class="text-4xl">💥</span>
+                <h2 class="text-2xl font-black text-rose-500">Permainan Selesai!</h2>
+                <p class="text-slate-300 text-xs">Pencapaian luar biasa bermain sambil belajarmu hari ini:</p>
+                
+                <div class="bg-slate-900 border border-slate-800 p-3 rounded-2xl w-full max-w-xs grid grid-cols-2 gap-2 text-center">
+                    <div>
+                        <p class="text-[9px] text-slate-400 font-bold uppercase">Skor Akhir</p>
+                        <p class="text-xl font-black text-emerald-400" id="game-end-score">0</p>
+                    </div>
+                    <div>
+                        <p class="text-[9px] text-slate-400 font-bold uppercase">Bonus Koin</p>
+                        <p class="text-xl font-black text-amber-400" id="game-end-coins">0 🪙</p>
+                    </div>
+                </div>
+
+                <div class="flex space-x-2 w-full max-w-xs text-xs">
+                    <button onclick="startGameLoop()" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-2.5 rounded-lg">Main Lagi</button>
+                    <button onclick="changeZone('dashboard')" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 rounded-lg">Menu Utama</button>
+                </div>
+            </div>
+
+            <!-- Game Board UI -->
+            <div class="flex justify-between items-center border-b border-slate-800 pb-2 mb-2 z-10 text-xs">
+                <div class="flex items-center space-x-3">
+                    <div>
+                        <p class="text-[9px] text-slate-400 font-bold uppercase leading-none">Skor</p>
+                        <p class="text-sm font-black text-emerald-400" id="game-score">0</p>
+                    </div>
+                    <div>
+                        <p class="text-[9px] text-slate-400 font-bold uppercase leading-none">Nyawa</p>
+                        <p class="text-sm font-black text-rose-400" id="game-lives">❤️❤️❤️</p>
+                    </div>
+                </div>
+                <div class="text-center bg-slate-800 px-3 py-1 rounded-full border border-slate-700">
+                    <span class="text-[10px] text-slate-400">Soal: </span>
+                    <span class="text-sm font-black text-yellow-300" id="game-equation">3 + 4 = ?</span>
+                </div>
+                <button onclick="exitGame()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+            </div>
+
+            <!-- Canvas Arena Game -->
+            <div class="flex-grow bg-slate-950 rounded-2xl relative overflow-hidden border border-slate-800" id="game-arena">
+                <!-- Spikes/Duri visual di bagian bawah -->
+                <div class="absolute bottom-0 left-0 right-0 h-4 bg-rose-950/40 border-t border-rose-500/50 flex items-center justify-around overflow-hidden">
+                    <div class="text-rose-500 font-black text-[9px] select-none w-full text-center tracking-widest">▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲</div>
+                </div>
+
+                <!-- Balon-Balon ditambahkan disini -->
+                <div id="balloons-container" class="absolute inset-0 pb-4 overflow-hidden"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer Copyright -->
+    <footer class="bg-slate-100 text-slate-400 text-center py-3 text-[10px] sm:text-xs font-semibold border-t border-slate-200 mt-auto">
+        <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-1.5">
+            <span>&copy; 2026 Petualangan Belajar Kiko.</span>
+            <span class="text-[9px] bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full">Didukung oleh Modul Teks Interaktif & Media Pembelajaran Visual Realistis</span>
+        </div>
+    </footer>
+
+    <!-- STYLING_CHUNK: Running complete game setup and APIs with error-free JS scripts -->
+    <script>
+        // Status State Pemain (Sistem Gamifikasi)
+        let playerState = {
+            level: 1,
+            xp: 10,
+            coins: 100,
+            badges: [
+                { id: 'start', title: 'Petualang Pemula', emoji: '🎒', desc: 'Memulai perjalanan belajar bersama Kiko.', unlocked: true },
+                { id: 'quiz-master', title: 'Juara Kuis Kiko', emoji: '🏆', desc: 'Menyelesaikan kuis Kiko dengan skor sempurna.', unlocked: false },
+                { id: 'creative-mind', title: 'Pelukis Realitas', emoji: '📸', desc: 'Membuat foto realistis Bareng Kiko.', unlocked: false },
+                { id: 'math-genius', title: 'Master Matematika', emoji: '⚡', desc: 'Mencetak skor 100 di game Balon Matematika.', unlocked: false }
+            ]
+        };
+
+        // Muat data progress dari Local Storage
+        if (localStorage.getItem('kiko_v3_player_state')) {
+            try {
+                playerState = JSON.parse(localStorage.getItem('kiko_v3_player_state'));
+            } catch(e) {
+                console.error("Gagal membaca progress status pemain.");
+            }
+        }
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            try {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'success') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                    osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
+                    osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2); // G5
+                    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.35);
+                } else if (type === 'error') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(140, audioCtx.currentTime);
+                    osc.frequency.linearRampToValueAtTime(70, audioCtx.currentTime + 0.25);
+                    gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.25);
+                } else if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.08);
+                    gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.08);
+                } else if (type === 'level-up') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(261.63, audioCtx.currentTime);
+                    osc.frequency.linearRampToValueAtTime(523.25, audioCtx.currentTime + 0.15);
+                    osc.frequency.linearRampToValueAtTime(1046.50, audioCtx.currentTime + 0.35);
+                    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.5);
+                }
+            } catch(e) {
+                console.log("Audio API tidak didukung browser ini.");
+            }
+        }
+
+        function saveState() {
+            localStorage.setItem('kiko_v3_player_state', JSON.stringify(playerState));
+            updateGamificationUI();
+        }
+
+        function updateGamificationUI() {
+            document.getElementById('player-level').innerText = playerState.level;
+            document.getElementById('player-coins').innerText = playerState.coins;
+            
+            const xpNeeded = playerState.level * 100;
+            const percentage = Math.min((playerState.xp / xpNeeded) * 100, 100);
+            document.getElementById('player-xp-bar').style.width = `${percentage}%`;
+
+            renderBadges();
+        }
+
+        function addXP(amount) {
+            playerState.xp += amount;
+            const xpNeeded = playerState.level * 100;
+            if (playerState.xp >= xpNeeded) {
+                playerState.xp -= xpNeeded;
+                playerState.level += 1;
+                playSound('level-up');
+                showToast(`🎉 Luar Biasa! Naik ke Level ${playerState.level}!`, '🏆');
+                triggerConfetti();
+            } else {
+                showToast(`+${amount} XP Belajar`, '⭐');
+            }
+            saveState();
+        }
+
+        function addCoins(amount) {
+            playerState.coins += amount;
+            saveState();
+        }
+
+        function spendCoins(amount) {
+            if (playerState.coins >= amount) {
+                playerState.coins -= amount;
+                saveState();
+                return true;
+            }
+            showCustomModal("🪙 Koinmu Tidak Cukup", "Duh, koinmu tidak cukup untuk membeli fitur ini. Kumpulkan koin dengan cara memainkan kuis ya!");
+            playSound('error');
+            return false;
+        }
+
+        function unlockBadge(id) {
+            const badge = playerState.badges.find(b => b.id === id);
+            if (badge && !badge.unlocked) {
+                badge.unlocked = true;
+                playSound('success');
+                showToast(`🏆 Lencana Dibuka: ${badge.title}!`, '🎉');
+                triggerConfetti();
+                saveState();
+            }
+        }
+
+        function renderBadges() {
+            const container = document.getElementById('badges-container');
+            if (!container) return;
+            container.innerHTML = '';
+            playerState.badges.forEach(badge => {
+                const isUnlocked = badge.unlocked;
+                container.innerHTML += `
+                    <div class="flex items-center space-x-2.5 p-3 rounded-2xl ${isUnlocked ? 'bg-teal-50 border border-teal-100' : 'bg-slate-50 opacity-40'} transition-all duration-300">
+                        <span class="text-2xl">${isUnlocked ? badge.emoji : '🔒'}</span>
+                        <div class="min-w-0 flex-1">
+                            <p class="font-bold text-xs ${isUnlocked ? 'text-teal-900' : 'text-slate-500'} truncate">${badge.title}</p>
+                            <p class="text-[10px] text-slate-400 leading-tight truncate">${badge.desc}</p>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function changeZone(zoneId) {
+            playSound('click');
+            
+            // Sembunyikan semua zona terlebih dahulu
+            ['dashboard', 'chat', 'quiz', 'story', 'image-gen', 'game'].forEach(zone => {
+                const element = document.getElementById(`zone-${zone}`);
+                if (element) element.classList.add('hidden');
+            });
+
+            // Hentikan permainan balon jika keluar dari area game
+            if (zoneId !== 'game-balloon') {
+                clearInterval(gameInterval);
+                clearInterval(balloonSpawnInterval);
+                gameActive = false;
+            }
+
+            // Petakan tombol klik ke kontainer id zona
+            let targetId = zoneId;
+            if (zoneId === 'game-balloon') {
+                targetId = 'game';
+            }
+
+            const targetZone = document.getElementById(`zone-${targetId}`);
+            if (targetZone) {
+                targetZone.classList.remove('hidden');
+            }
+
+            if (targetId === 'chat') {
+                const chatBox = document.getElementById('chat-messages');
+                chatBox.scrollTop = chatBox.scrollHeight;
+            } else if (targetId === 'game') {
+                initGameScreen();
+            } else if (targetId === 'image-gen') {
+                setTimeout(initDrawingCanvas, 100);
+            }
+
+            lucide.createIcons();
+        }
+
+        function showCustomModal(title, message, emoji = '⚠️') {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-message').innerText = message;
+            document.getElementById('modal-emoji').innerText = emoji;
+            document.getElementById('custom-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            playSound('click');
+            document.getElementById('custom-modal').classList.add('hidden');
+        }
+
+        let creativeCanvas, canvasCtx;
+        let isDrawing = false;
+        let brushColor = '#ef4444';
+        let brushSize = 8;
+        let canvasBgImage = null;
+
+        function initDrawingCanvas() {
+            creativeCanvas = document.getElementById('creative-canvas');
+            if (!creativeCanvas) return;
+            canvasCtx = creativeCanvas.getContext('2d');
+            
+            clearCanvasOnly();
+
+            // Setup Mouse Events (PC)
+            creativeCanvas.addEventListener('mousedown', startDoodle);
+            creativeCanvas.addEventListener('mousemove', drawDoodle);
+            creativeCanvas.addEventListener('mouseup', stopDoodle);
+            creativeCanvas.addEventListener('mouseleave', stopDoodle);
+
+            // Setup Touch Events (HP/Tablet)
+            creativeCanvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                startDoodle(e);
+            }, { passive: false });
+            creativeCanvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                drawDoodle(e);
+            }, { passive: false });
+            creativeCanvas.addEventListener('touchend', stopDoodle);
+
+            const sizeSlider = document.getElementById('brush-size-slider');
+            if (sizeSlider) {
+                sizeSlider.addEventListener('input', (e) => {
+                    brushSize = e.target.value;
+                });
+            }
+        }
+
+        function getCanvasCoordinates(e) {
+            const rect = creativeCanvas.getBoundingClientRect();
+            let clientX, clientY;
+
+            if (e.touches && e.touches.length > 0) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+
+            const x = ((clientX - rect.left) / rect.width) * creativeCanvas.width;
+            const y = ((clientY - rect.top) / rect.height) * creativeCanvas.height;
+            return { x, y };
+        }
+
+        function startDoodle(e) {
+            isDrawing = true;
+            const pos = getCanvasCoordinates(e);
+            canvasCtx.beginPath();
+            canvasCtx.moveTo(pos.x, pos.y);
+        }
+
+        function drawDoodle(e) {
+            if (!isDrawing) return;
+            const pos = getCanvasCoordinates(e);
+            
+            canvasCtx.lineTo(pos.x, pos.y);
+            canvasCtx.strokeStyle = brushColor;
+            canvasCtx.lineWidth = brushSize;
+            canvasCtx.lineCap = 'round';
+            canvasCtx.lineJoin = 'round';
+            canvasCtx.stroke();
+        }
+
+        function stopDoodle() {
+            isDrawing = false;
+            canvasCtx.closePath();
+        }
+
+        function setBrushColor(color, element) {
+            playSound('click');
+            brushColor = color;
+            highlightActiveTool(element);
+        }
+
+        function setEraser(element) {
+            playSound('click');
+            brushColor = '#ffffff';
+            highlightActiveTool(element);
+        }
+
+        function highlightActiveTool(selectedElement) {
+            document.querySelectorAll('.color-swatch').forEach(btn => {
+                btn.classList.remove('ring-2', 'ring-red-500', 'ring-indigo-500', 'scale-110');
+            });
+            if (selectedElement) {
+                selectedElement.classList.add('ring-2', 'ring-indigo-500', 'scale-110');
+            }
+        }
+
+        function clearCanvasOnly() {
+            if (!canvasCtx) return;
+            canvasCtx.clearRect(0, 0, creativeCanvas.width, creativeCanvas.height);
+            
+            if (canvasBgImage) {
+                canvasCtx.drawImage(canvasBgImage, 0, 0, creativeCanvas.width, creativeCanvas.height);
+            } else {
+                canvasCtx.fillStyle = '#ffffff';
+                canvasCtx.fillRect(0, 0, creativeCanvas.width, creativeCanvas.height);
+            }
+        }
+
+        async function fetchFreeTextAI(systemPrompt, userPrompt) {
+            const url = "https://text.pollinations.ai/";
+            const payload = {
+                messages: [
+                    { role: "system", content: systemPrompt },
+                    { role: "user", content: userPrompt }
+                ],
+                seed: Math.floor(Math.random() * 1000000)
+            };
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error("Gagal memperoleh respon cerdas dari Kiko AI.");
+            }
+            return await response.text();
+        }
+
+        async function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            playSound('click');
+            input.value = '';
+            appendChatMessage('Kamu', message, 'user');
+
+            const typingId = appendChatMessage('Kiko AI', 'Sedang mencari penjelasan terbaik...', 'ai', true);
+
+            const systemPrompt = "Kamu adalah Kiko, asisten robot AI yang sangat ceria, lucu, dan penuh semangat untuk anak Sekolah Dasar (SD) umur 6-12 tahun. Jawab pertanyaan mereka dengan bahasa Indonesia yang sangat sederhana, asyik, gunakan banyak analogi mainan, serta sisipkan banyak sekali emoji ceria agar anak senang membaca. Berikan dorongan belajar di setiap akhir kalimat obrolan!";
+
+            try {
+                const aiResponse = await fetchFreeTextAI(systemPrompt, message);
+                document.getElementById(typingId).innerHTML = `<p class="font-bold text-teal-600 mb-0.5 text-xs sm:text-sm">Kiko AI</p>${aiResponse}`;
+                addXP(15);
+            } catch (err) {
+                document.getElementById(typingId).innerHTML = `<p class="font-bold text-rose-600 mb-0.5 text-xs sm:text-sm">Oops! Gangguan</p>${err.message}`;
+                playSound('error');
+            }
+            
+            const chatBox = document.getElementById('chat-messages');
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function appendChatMessage(sender, text, role, isTyping = false) {
+            const chatBox = document.getElementById('chat-messages');
+            const messageId = 'msg-' + Date.now();
+            const div = document.createElement('div');
+            div.className = `flex items-start space-x-2.5 ${role === 'user' ? 'justify-end' : ''}`;
+            
+            if (role === 'user') {
+                div.innerHTML = `
+                    <div class="bg-indigo-100 rounded-2xl rounded-tr-none p-3 max-w-[85%] text-xs sm:text-sm shadow-xs">
+                        <p class="font-bold text-indigo-600 mb-0.5">Kamu</p>
+                        ${text}
+                    </div>
+                    <div class="bg-indigo-500 text-white p-1.5 rounded-full shadow-sm text-sm">🧒</div>
+                `;
+            } else {
+                div.innerHTML = `
+                    <div class="bg-teal-500 text-white p-1.5 rounded-full shadow-sm text-sm">🤖</div>
+                    <div id="${messageId}" class="bg-slate-100 rounded-2xl rounded-tl-none p-3 max-w-[85%] text-xs sm:text-sm shadow-xs ${isTyping ? 'animate-pulse text-slate-400' : ''}">
+                        <p class="font-bold text-teal-600 mb-0.5">${sender}</p>
+                        ${text}
+                    </div>
+                `;
+            }
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+            return messageId;
+        }
+
+        // --- ZONA 3: KUIS PINTAR AI ---
+        let selectedQuizTopic = "";
+        let currentQuizData = [];
+        let currentQuizIndex = 0;
+        let quizScore = 0;
+
+        function selectQuizTopic(topic) {
+            playSound('click');
+            selectedQuizTopic = topic;
+            document.querySelectorAll('.quiz-topic-btn').forEach(btn => {
+                btn.classList.remove('border-purple-600', 'bg-purple-100');
+                if (btn.innerText.includes(topic.split(' ')[0])) {
+                    btn.classList.add('border-purple-600', 'bg-purple-100');
+                }
+            });
+        }
+
+        async function startQuizGeneration() {
+            const customTopic = document.getElementById('custom-quiz-topic').value.trim();
+            const topicToUse = customTopic || selectedQuizTopic;
+            if (!topicToUse) {
+                showToast("Pilih atau ketik topik kuis dulu ya!", "⚠️");
+                playSound('error');
+                return;
+            }
+
+            document.getElementById('quiz-setup').classList.add('hidden');
+            document.getElementById('quiz-loading').classList.remove('hidden');
+
+            const systemPrompt = `Kamu adalah pembuat kuis edukatif seru untuk sekolah dasar (SD). Tugasmu adalah memberikan output berupa JSON Array murni yang berisi 5 objek pertanyaan. Contoh struktur objek JSON:
+[
+  {
+    "question": "Benda apa di tata surya yang memancarkan cahayanya sendiri?",
+    "options": ["Bulan", "Bintang Matahari", "Bumi", "Mars"],
+    "answer": "Bintang Matahari",
+    "explanation": "Matahari adalah sebuah bintang raksasa yang mampu memancarkan energi cahayanya sendiri!"
+  }
+]
+Keluarkan JSON mentah saja, tanpa menggunakan kata pembuka, tanda backtick markdown, ataupun format tambahan lainnya.`;
+
+            const userPrompt = `Buatkan kuis dengan topik "${topicToUse}" sebanyak 5 soal seru untuk anak SD.`;
+
+            try {
+                const responseText = await fetchFreeTextAI(systemPrompt, userPrompt);
+                const cleanJson = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+                currentQuizData = JSON.parse(cleanJson);
+                currentQuizIndex = 0;
+                quizScore = 0;
+                
+                document.getElementById('quiz-loading').classList.add('hidden');
+                document.getElementById('quiz-play').classList.remove('hidden');
+                displayQuizQuestion();
+            } catch(e) {
+                console.error(e);
+                showCustomModal("Gagal Membuat Kuis", "Duh, AI sedang kelebihan beban. Tolong ulangi langkah pengerjaan kuis sekali lagi.");
+                document.getElementById('quiz-loading').classList.add('hidden');
+                document.getElementById('quiz-setup').classList.remove('hidden');
+                playSound('error');
+            }
+        }
+
+        function displayQuizQuestion() {
+            const questionObj = currentQuizData[currentQuizIndex];
+            document.getElementById('quiz-progress-text').innerText = `Soal ${currentQuizIndex + 1} dari ${currentQuizData.length}`;
+            document.getElementById('quiz-question-text').innerText = questionObj.question;
+            document.getElementById('quiz-genre-badge').innerText = selectedQuizTopic || "Kustom";
+
+            const container = document.getElementById('quiz-options-container');
+            container.innerHTML = '';
+            
+            questionObj.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left bg-white border-2 border-slate-200 hover:border-purple-400 p-3.5 rounded-2xl font-bold text-xs sm:text-sm transition flex justify-between items-center";
+                btn.innerHTML = `<span>${opt}</span><span class="option-icon hidden"></span>`;
+                btn.onclick = () => selectQuizAnswer(btn, opt, questionObj.answer, questionObj.explanation);
+                container.appendChild(btn);
+            });
+
+            document.getElementById('quiz-next-btn').classList.add('hidden');
+        }
+
+        function selectQuizAnswer(selectedBtn, chosenOpt, correctOpt, explanation) {
+            const allButtons = document.querySelectorAll('#quiz-options-container button');
+            allButtons.forEach(btn => btn.disabled = true);
+
+            const isCorrect = (chosenOpt === correctOpt);
+            
+            if (isCorrect) {
+                selectedBtn.classList.remove('border-slate-200');
+                selectedBtn.classList.add('border-emerald-500', 'bg-emerald-50');
+                selectedBtn.querySelector('.option-icon').innerHTML = "🟢 Benar!";
+                selectedBtn.querySelector('.option-icon').classList.remove('hidden');
+                quizScore += 20;
+                playSound('success');
+            } else {
+                selectedBtn.classList.remove('border-slate-200');
+                selectedBtn.classList.add('border-rose-500', 'bg-rose-50');
+                selectedBtn.querySelector('.option-icon').innerHTML = "🔴 Salah";
+                selectedBtn.querySelector('.option-icon').classList.remove('hidden');
+                
+                allButtons.forEach(btn => {
+                    if (btn.innerText.includes(correctOpt)) {
+                        btn.classList.add('border-emerald-500', 'bg-emerald-50');
+                    }
+                });
+                playSound('error');
+            }
+
+            const explanationBox = document.createElement('div');
+            explanationBox.className = "mt-3 p-3 bg-indigo-50 border border-indigo-100/50 rounded-xl text-xs text-indigo-900 leading-relaxed";
+            explanationBox.innerHTML = `<strong>Kiko Menjelaskan:</strong> ${explanation}`;
+            document.getElementById('quiz-options-container').appendChild(explanationBox);
+
+            document.getElementById('quiz-next-btn').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function nextQuizQuestion() {
+            playSound('click');
+            currentQuizIndex++;
+            if (currentQuizIndex < currentQuizData.length) {
+                displayQuizQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function finishQuiz() {
+            document.getElementById('quiz-play').classList.add('hidden');
+            document.getElementById('quiz-result').classList.remove('hidden');
+
+            document.getElementById('quiz-final-score').innerText = `${quizScore}/100`;
+            const coinWon = Math.round(quizScore * 0.2);
+            addCoins(coinWon);
+            addXP(quizScore * 0.5);
+
+            document.getElementById('quiz-coin-reward').innerText = `+${coinWon} 🪙`;
+
+            if (quizScore === 100) {
+                document.getElementById('quiz-result-emoji').innerText = "👑";
+                document.getElementById('quiz-result-title').innerText = "Juara Kuis Sempurna!";
+                document.getElementById('quiz-result-subtitle').innerText = "Luar biasa cerdas! Kamu menjawab semuanya dengan benar.";
+                unlockBadge('quiz-master');
+                triggerConfetti();
+            } else {
+                document.getElementById('quiz-result-emoji').innerText = "🎉";
+                document.getElementById('quiz-result-title').innerText = "Petualangan Selesai!";
+                document.getElementById('quiz-result-subtitle').innerText = "Latihan terus menerus agar menjadi juara masa depan!";
+            }
+        }
+
+        // --- ZONA 4: CERITA PETUALANGAN AI ---
+        let selectedStoryTheme = "";
+        let currentStoryData = null;
+
+        function selectStoryTheme(theme) {
+            playSound('click');
+            selectedStoryTheme = theme;
+            const customInput = document.getElementById('custom-story-theme');
+            if (customInput) customInput.value = ''; // Reset input kustom jika anak menekan tombol preset
+            document.querySelectorAll('.story-theme-btn').forEach(btn => {
+                btn.classList.remove('border-amber-600', 'bg-amber-100');
+                if (btn.innerText.includes(theme.split(' ')[0])) {
+                    btn.classList.add('border-amber-600', 'bg-amber-100');
+                }
+            });
+        }
+
+        function clearSelectedStoryTheme() {
+            selectedStoryTheme = "";
+            document.querySelectorAll('.story-theme-btn').forEach(btn => {
+                btn.classList.remove('border-amber-600', 'bg-amber-100');
+            });
+        }
+
+        async function startStoryGeneration() {
+            const customTheme = document.getElementById('custom-story-theme').value.trim();
+            const themeToUse = customTheme || selectedStoryTheme;
+            if (!themeToUse) {
+                showToast("Pilih atau ketik tema dongengmu dulu ya!", "⚠️");
+                playSound('error');
+                return;
+            }
+
+            document.getElementById('story-setup').classList.add('hidden');
+            document.getElementById('story-loading').classList.remove('hidden');
+
+            const systemPrompt = `Kamu adalah seorang penulis cerita anak legendaris. Ciptakan cerita petualangan fantasi mendidik untuk anak SD sepanjang 3 paragraf lengkap. Di akhir cerita, wajib berikan satu pertanyaan kuis pemahaman bacaan yang memiliki 4 opsi jawaban pilihan ganda.
+Kembalikan respon HANYA dalam format JSON objek terstruktur murni seperti ini:
+{
+  "title": "Petualangan Kiko Menjelajah Angkasa",
+  "story": "Paragraf 1...\\n\\nParagraf 2...\\n\\nParagraf 3...",
+  "question": "Apa nama benda yang ditemukan Kiko?",
+  "options": ["Opsi A", "Opsi B", "Opsi C", "Opsi D"],
+  "answer": "Opsi B",
+  "explanation": "Penjelasan mengapa opsi B adalah jawaban benar berdasarkan cerita di atas."
+}
+Hindari membungkus JSON dengan format markdown backtick, kembalikan teks JSON mentah agar siap diparse langsung oleh kode.`;
+
+            try {
+                const responseText = await fetchFreeTextAI(systemPrompt, `Buat cerita tentang "${themeToUse}" untuk anak SD.`);
+                const cleanJson = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+                currentStoryData = JSON.parse(cleanJson);
+
+                document.getElementById('story-loading').classList.add('hidden');
+                document.getElementById('story-display').classList.remove('hidden');
+
+                document.getElementById('story-title-text').innerText = currentStoryData.title;
+                document.getElementById('story-body-text').innerText = currentStoryData.story;
+                document.getElementById('story-question-text').innerText = currentStoryData.question;
+
+                const optionsContainer = document.getElementById('story-options-container');
+                optionsContainer.innerHTML = '';
+                
+                currentStoryData.options.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = "w-full text-left bg-slate-50 border border-slate-200 hover:border-amber-400 p-2.5 rounded-xl font-bold text-[11px] sm:text-xs transition flex justify-between items-center";
+                    btn.innerHTML = `<span>${opt}</span><span class="story-opt-icon hidden"></span>`;
+                    btn.onclick = () => checkStoryAnswer(btn, opt);
+                    optionsContainer.appendChild(btn);
+                });
+
+                document.getElementById('story-finish-btn').classList.add('hidden');
+            } catch(e) {
+                console.error(e);
+                showCustomModal("Gagal Membuat Cerita", "Kiko kehabisan tinta ajaib untuk merajut cerita baru. Yuk, klik ulangi pengerjaan dongeng!");
+                document.getElementById('story-loading').classList.add('hidden');
+                document.getElementById('story-setup').classList.remove('hidden');
+                playSound('error');
+            }
+        }
+
+        function checkStoryAnswer(selectedBtn, chosenOpt) {
+            const correctOpt = currentStoryData.answer;
+            const allButtons = document.querySelectorAll('#story-options-container button');
+            allButtons.forEach(btn => btn.disabled = true);
+
+            const isCorrect = (chosenOpt === correctOpt);
+
+            if (isCorrect) {
+                selectedBtn.classList.add('border-emerald-500', 'bg-emerald-50');
+                selectedBtn.querySelector('.story-opt-icon').innerHTML = "🟢 Benar!";
+                selectedBtn.querySelector('.story-opt-icon').classList.remove('hidden');
+                addCoins(20);
+                addXP(30);
+                playSound('success');
+                showToast("Jawaban Benar! +20 Koin Pembaca Pintar!", "🪙");
+                triggerConfetti();
+            } else {
+                selectedBtn.classList.add('border-rose-500', 'bg-rose-50');
+                selectedBtn.querySelector('.story-opt-icon').innerHTML = "🔴 Salah";
+                selectedBtn.querySelector('.story-opt-icon').classList.remove('hidden');
+                
+                allButtons.forEach(btn => {
+                    if (btn.innerText.includes(correctOpt)) {
+                        btn.classList.add('border-emerald-500', 'bg-emerald-50');
+                    }
+                });
+                playSound('error');
+            }
+
+            const exp = document.createElement('div');
+            exp.className = "mt-2 p-2.5 bg-amber-50 rounded-xl text-[10px] text-amber-900";
+            exp.innerHTML = `<strong>Fakta Edukatif:</strong> ${currentStoryData.explanation}`;
+            document.getElementById('story-options-container').appendChild(exp);
+
+            document.getElementById('story-finish-btn').classList.remove('hidden');
+        }
+
+        function finishStoryAdventure() {
+            playSound('click');
+            changeZone('dashboard');
+            showToast("Hore, kamu menyelesaikan dongeng membaca!", "📚");
+        }
+
+        // --- ZONA 5: GENERATOR GAMBAR KREATIF (INSTAN TANPA KUNCI - FLUX REALISM) ---
+        function fillImagePrompt(text) {
+            document.getElementById('image-prompt-input').value = text;
+        }
+
+        async function generateAIImage() {
+            const promptInput = document.getElementById('image-prompt-input').value.trim();
+            if (!promptInput) {
+                showToast("Tulis imajinasimu dulu ya agar bisa difoto!", "⚠️");
+                playSound('error');
+                return;
+            }
+
+            if (!spendCoins(10)) return;
+
+            document.getElementById('image-loading').classList.remove('hidden');
+
+            // Model Realisme Dokumenter Tanpa Watermark
+            const encodedPrompt = encodeURIComponent("A magnificent 3D realistic gold coin logo, shiny metallic texture, embossed cute star symbol in the center, glowing magical light effects, isolated on a clean black background, studio lighting, hyper-detailed 8k photo");
+            const randomSeed = Math.floor(Math.random() * 999999);
+            const imageUrl = `https://image.pollinations.ai/p/${encodedPrompt}?width=1024&height=1024&seed=${randomSeed}&model=flux&nologo=true`;
+
+                console.log(imageUrl);
+
+            const img = new Image();
+            img.crossOrigin = "anonymous";
+            img.src = imageUrl;
+
+            img.onload = function() {
+                document.getElementById('image-loading').classList.add('hidden');
+                
+                canvasBgImage = img;
+                clearCanvasOnly();
+                
+                playSound('success');
+                showToast("Tadaaa! Foto realistis sudah siap! Ayo coret & hias dengan sentuhan kreatifmu!", "📸");
+                addXP(40);
+                unlockBadge('creative-mind');
+                triggerConfetti();
+            };
+
+            img.onerror = function() {
+                document.getElementById('image-loading').classList.add('hidden');
+                showToast("Jaringan penuh, gagal memuat foto realistis.", "⚠️");
+                playSound('error');
+            };
+        }
+
+        function saveImageToGallery() {
+            playSound('click');
+            if (!creativeCanvas) return;
+
+            try {
+                const dataUrl = creativeCanvas.toDataURL('image/png');
+                
+                const link = document.createElement('a');
+                link.href = dataUrl;
+                link.download = 'Kreativitas_Kiko_AI.png';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showToast("Karya hebatmu berhasil disimpan di galeri perantimu! 🎨", "💾");
+            } catch (err) {
+                console.error(err);
+                showToast("Gagal menyimpan gambar karena batasan keamanan peramban.", "⚠️");
+            }
+        }
+
+        // --- ZONA 6: MINI GAME BALON ANGKA ---
+        let gameScore = 0;
+        let gameLives = 3;
+        let gameInterval = null;
+        let balloonSpawnInterval = null;
+        let currentTargetAnswer = 0;
+        let gameActive = false;
+
+        function initGameScreen() {
+            document.getElementById('game-start-screen').classList.remove('hidden');
+            document.getElementById('game-over-screen').classList.add('hidden');
+        }
+
+        function generateMathEquation() {
+            const isPlus = Math.random() > 0.4;
+            const num1 = Math.floor(Math.random() * 10) + 2;
+            const num2 = Math.floor(Math.random() * 8) + 1;
+
+            if (isPlus) {
+                currentTargetAnswer = num1 + num2;
+                document.getElementById('game-equation').innerText = `${num1} + ${num2} = ?`;
+            } else {
+                const max = Math.max(num1, num2);
+                const min = Math.min(num1, num2);
+                currentTargetAnswer = max - min;
+                document.getElementById('game-equation').innerText = `${max} - ${min} = ?`;
+            }
+        }
+
+        function startGameLoop() {
+            playSound('click');
+            document.getElementById('game-start-screen').classList.add('hidden');
+            document.getElementById('game-over-screen').classList.add('hidden');
+
+            gameScore = 0;
+            gameLives = 3;
+            gameActive = true;
+            
+            document.getElementById('game-score').innerText = gameScore;
+            document.getElementById('game-lives').innerText = "❤️❤️❤️";
+            document.getElementById('balloons-container').innerHTML = '';
+
+            generateMathEquation();
+
+            clearInterval(balloonSpawnInterval);
+            balloonSpawnInterval = setInterval(spawnBalloon, 1400);
+
+            clearInterval(gameInterval);
+            gameInterval = setInterval(updateGamePhysics, 30);
+        }
+
+        function spawnBalloon() {
+            if (!gameActive) return;
+
+            const container = document.getElementById('balloons-container');
+            const balloon = document.createElement('div');
+            
+            const isCorrectAnswer = Math.random() > 0.65;
+            let value = 0;
+            if (isCorrectAnswer) {
+                value = currentTargetAnswer;
+            } else {
+                value = currentTargetAnswer + (Math.floor(Math.random() * 4) + 1) * (Math.random() > 0.5 ? 1 : -1);
+                if (value < 0) value = Math.floor(Math.random() * 10);
+            }
+
+            const colors = [
+                'from-pink-500 to-rose-400',
+                'from-cyan-500 to-blue-400',
+                'from-yellow-400 to-amber-300',
+                'from-purple-500 to-indigo-400',
+                'from-emerald-400 to-teal-300'
+            ];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            const startX = Math.random() * (container.clientWidth - 50);
+            
+            balloon.className = `absolute bottom-[-60px] w-12 h-16 rounded-full bg-gradient-to-b ${randomColor} shadow-md flex items-center justify-center text-white font-black text-sm cursor-pointer select-none border border-white/20 transition-transform hover:scale-105`;
+            balloon.style.left = `${startX}px`;
+            balloon.dataset.val = value;
+            balloon.dataset.correct = isCorrectAnswer ? "true" : "false";
+            balloon.innerHTML = `
+                ${value}
+                <div class="absolute bottom-[-10px] left-1/2 -translate-x-1/2 w-0.5 h-3.5 bg-slate-400"></div>
+            `;
+
+            const handlePop = () => {
+                if (!gameActive) return;
+                popBalloon(balloon);
+            };
+
+            balloon.addEventListener('mousedown', handlePop);
+            balloon.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                handlePop();
+            });
+
+            container.appendChild(balloon);
+        }
+
+        function popBalloon(balloon) {
+            const isCorrect = (balloon.dataset.correct === "true");
+            balloon.remove();
+
+            if (isCorrect) {
+                gameScore += 10;
+                document.getElementById('game-score').innerText = gameScore;
+                playSound('success');
+                
+                confetti({
+                    particleCount: 15,
+                    spread: 40,
+                    origin: { y: 0.5 }
+                });
+
+                generateMathEquation();
+            } else {
+                triggerWrongFeedback();
+            }
+        }
+
+        function triggerWrongFeedback() {
+            gameLives--;
+            playSound('error');
+            
+            let heartString = "";
+            for (let i = 0; i < 3; i++) {
+                heartString += (i < gameLives) ? "❤️" : "🖤";
+            }
+            document.getElementById('game-lives').innerText = heartString;
+
+            if (gameLives <= 0) {
+                endGame();
+            }
+        }
+
+        function updateGamePhysics() {
+            if (!gameActive) return;
+
+            const balloons = document.querySelectorAll('#balloons-container > div');
+            const arenaHeight = document.getElementById('game-arena').clientHeight;
+
+            balloons.forEach(balloon => {
+                const currentBottom = parseFloat(balloon.style.bottom || -60);
+                const speed = 2.2 + (gameScore * 0.05); // Kecepatan meningkat bertahap
+                const nextBottom = currentBottom + speed;
+
+                if (nextBottom >= arenaHeight - 4) {
+                    balloon.remove();
+                    if (balloon.dataset.correct === "true") {
+                        triggerWrongFeedback();
+                    }
+                } else {
+                    balloon.style.bottom = `${nextBottom}px`;
+                }
+            });
+        }
+
+        function endGame() {
+            gameActive = false;
+            clearInterval(gameInterval);
+            clearInterval(balloonSpawnInterval);
+
+            document.getElementById('game-over-screen').classList.remove('hidden');
+            document.getElementById('game-end-score').innerText = gameScore;
+            
+            const finalCoins = Math.floor(gameScore / 2);
+            addCoins(finalCoins);
+            addXP(gameScore);
+
+            document.getElementById('game-end-coins').innerText = `+${finalCoins} 🪙`;
+
+            if (gameScore >= 100) {
+                unlockBadge('math-genius');
+            }
+        }
+
+        function exitGame() {
+            clearInterval(gameInterval);
+            clearInterval(balloonSpawnInterval);
+            changeZone('dashboard');
+        }
+
+        window.onload = function() {
+            updateGamificationUI();
+            initDrawingCanvas();
+            lucide.createIcons();
+        };
+    </script>
+</body>
+</html>
