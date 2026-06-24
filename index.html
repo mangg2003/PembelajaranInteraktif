@@ -3,14 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Petualangan Belajar Kiko - Aplikasi Edukasi SD</title>
-    <!-- Tailwind CSS untuk Styling Premium -->
+    <title>Petualangan Belajar Kiko</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Google Fonts: Baloo 2 untuk kesan bersahabat dan ramah anak -->
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&display=swap" rel="stylesheet">
-    <!-- Canvas Confetti untuk perayaan ketika naik level/menang kuis -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
@@ -39,6 +35,7 @@
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
+            border-radius: 10px;
         }
         .dot-pulse {
             animation: pulse 1.2s infinite ease-in-out;
@@ -53,13 +50,10 @@
 </head>
 <body class="min-h-screen flex flex-col overflow-x-hidden text-slate-800 selection:bg-teal-200">
 
-    <!-- Header / Navbar Utama -->
     <header class="bg-gradient-to-r from-teal-400 via-cyan-400 to-blue-500 text-white shadow-md px-4 py-3 sticky top-0 z-50">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <!-- Logo & Karakter -->
             <div class="flex items-center space-x-2.5 cursor-pointer" onclick="changeZone('dashboard')">
                 <div class="bg-white p-1 rounded-full shadow-md bouncing-effect">
-                    <!-- Robot Avatar SVG -->
                     <svg class="w-9 h-9 text-teal-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                         <rect x="3" y="11" width="18" height="10" rx="2" fill="#2dd4bf" stroke="#fff"></rect>
                         <circle cx="12" cy="5" r="2" fill="#facc15"></circle>
@@ -72,19 +66,15 @@
                 </div>
             </div>
 
-            <!-- Gamifikasi Info / Bar Skor -->
             <div class="flex items-center space-x-2">
                 <div class="flex items-center space-x-2 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full border border-white/30 text-xs sm:text-sm">
-                    <!-- Level -->
                     <div class="flex items-center space-x-1">
                         <span class="text-yellow-300 font-bold">LV.</span>
                         <span id="player-level" class="font-extrabold text-white">1</span>
                     </div>
-                    <!-- XP Bar -->
                     <div class="hidden sm:block w-20 bg-blue-950/30 rounded-full h-2.5 overflow-hidden">
                         <div id="player-xp-bar" class="bg-gradient-to-r from-yellow-400 to-amber-500 h-full rounded-full transition-all duration-500" style="width: 10%"></div>
                     </div>
-                    <!-- Koin -->
                     <div class="flex items-center space-x-1">
                         <span class="text-amber-300">🪙</span>
                         <span id="player-coins" class="font-extrabold text-white">100</span>
@@ -94,16 +84,13 @@
         </div>
     </header>
 
-    <!-- Kontainer Utama Aplikasi -->
     <main class="flex-grow max-w-6xl w-full mx-auto p-3 sm:p-4 flex flex-col justify-start">
 
-        <!-- Notifikasi Kustom / Feedback System -->
         <div id="toast-message" class="hidden fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl z-50 flex items-center space-x-2 transition-all duration-300 translate-y-10">
             <span id="toast-icon">🎉</span>
             <span id="toast-text" class="font-bold text-xs sm:text-sm"></span>
         </div>
 
-        <!-- Custom Modal untuk Info/Alert agar tidak memakai window.alert -->
         <div id="custom-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
             <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center space-y-4 shadow-2xl border border-slate-100 animate-scale-up">
                 <span id="modal-emoji" class="text-5xl block">⚠️</span>
@@ -113,9 +100,7 @@
             </div>
         </div>
 
-        <!-- ZONE 1: DASHBOARD UTAMA -->
         <section id="zone-dashboard" class="space-y-4 sm:space-y-6">
-            <!-- Kartu Sambutan & Maskot -->
             <div class="bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600 rounded-3xl p-5 sm:p-6 text-white shadow-lg flex flex-col md:flex-row justify-between items-center relative overflow-hidden">
                 <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
                 <div class="absolute -left-10 -top-10 w-28 h-28 bg-purple-400/20 rounded-full blur-xl"></div>
@@ -130,7 +115,6 @@
                     </div>
                 </div>
                 
-                <!-- Visual Maskot -->
                 <div class="mt-4 md:mt-0 z-10 flex flex-col items-center">
                     <div class="bg-white/10 p-3 rounded-full border border-white/20 shadow-inner bouncing-effect">
                         <svg class="w-16 h-16 sm:w-20 sm:h-20 text-yellow-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -142,10 +126,8 @@
                 </div>
             </div>
 
-            <!-- Navigasi Menu Zona Belajar -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 
-                <!-- Card 1: Sahabat AI Kiko -->
                 <button onclick="changeZone('chat')" class="group text-left bg-white p-5 rounded-3xl shadow-sm hover:shadow-md border border-slate-100 hover:border-teal-400 transition-all duration-300 flex flex-col justify-between h-48 relative overflow-hidden">
                     <div class="absolute right-0 top-0 bg-teal-50 text-teal-400 p-6 rounded-bl-full group-hover:scale-110 transition-transform duration-300">
                         <i data-lucide="message-square" class="w-6 h-6"></i>
@@ -160,7 +142,6 @@
                     </span>
                 </button>
 
-                <!-- Card 2: Kuis Pintar AI -->
                 <button onclick="changeZone('quiz')" class="group text-left bg-white p-5 rounded-3xl shadow-sm hover:shadow-md border border-slate-100 hover:border-purple-400 transition-all duration-300 flex flex-col justify-between h-48 relative overflow-hidden">
                     <div class="absolute right-0 top-0 bg-purple-50 text-purple-400 p-6 rounded-bl-full group-hover:scale-110 transition-transform duration-300">
                         <i data-lucide="trophy" class="w-6 h-6"></i>
@@ -175,7 +156,6 @@
                     </span>
                 </button>
 
-                <!-- Card 3: Cerita Kreatif AI -->
                 <button onclick="changeZone('story')" class="group text-left bg-white p-5 rounded-3xl shadow-sm hover:shadow-md border border-slate-100 hover:border-amber-400 transition-all duration-300 flex flex-col justify-between h-48 relative overflow-hidden">
                     <div class="absolute right-0 top-0 bg-amber-50 text-amber-400 p-6 rounded-bl-full group-hover:scale-110 transition-transform duration-300">
                         <i data-lucide="book-open" class="w-6 h-6"></i>
@@ -190,7 +170,6 @@
                     </span>
                 </button>
 
-                <!-- Card 4: Gambar Ajaib AI -->
                 <button onclick="changeZone('image-gen')" class="group text-left bg-white p-5 rounded-3xl shadow-sm hover:shadow-md border border-slate-100 hover:border-pink-400 transition-all duration-300 flex flex-col justify-between h-48 relative overflow-hidden">
                     <div class="absolute right-0 top-0 bg-pink-50 text-pink-400 p-6 rounded-bl-full group-hover:scale-110 transition-transform duration-300">
                         <i data-lucide="palette" class="w-6 h-6"></i>
@@ -205,7 +184,6 @@
                     </span>
                 </button>
 
-                <!-- Card 5: Mini-Game Balon Matematika -->
                 <button onclick="changeZone('game-balloon')" class="sm:col-span-2 lg:col-span-4 group text-left bg-gradient-to-r from-emerald-400 to-green-500 p-5 rounded-3xl shadow-md hover:shadow-lg transition-all duration-300 flex flex-col sm:flex-row justify-between items-center text-white space-y-4 sm:space-y-0">
                     <div class="space-y-1 max-w-xl">
                         <span class="bg-white/25 text-white text-[10px] font-bold px-3 py-0.5 rounded-full">TANTANGAN SERU</span>
@@ -218,19 +196,16 @@
                 </button>
             </div>
 
-            <!-- Bagian Lencana -->
             <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
                 <div class="flex items-center space-x-2 mb-4">
                     <span class="text-xl">🏆</span>
                     <h3 class="text-base sm:text-lg font-black text-slate-800">Lencana Prestasimu</h3>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="badges-container">
-                    <!-- Ditambahkan secara dinamis -->
-                </div>
+                    </div>
             </div>
         </section>
 
-        <!-- ZONE 2: CHAT SAHABAT KIKO (AI TUTOR) -->
         <section id="zone-chat" class="hidden flex-grow flex flex-col gap-3 min-h-[450px]">
             <div class="flex items-center justify-between">
                 <button onclick="changeZone('dashboard')" class="text-slate-600 hover:text-slate-950 font-bold text-xs flex items-center space-x-1.5">
@@ -242,7 +217,6 @@
             </div>
 
             <div class="flex-grow flex flex-col md:flex-row gap-4 h-[420px] sm:h-[480px]">
-                <!-- Sidebar Tips Tanya -->
                 <div class="hidden md:flex w-60 bg-teal-50/70 p-4 rounded-3xl border border-teal-100/50 flex-col justify-between">
                     <div class="space-y-3">
                         <h4 class="font-bold text-teal-800 text-sm flex items-center space-x-1.5">
@@ -258,7 +232,6 @@
                     <p class="text-[10px] text-teal-600 font-semibold text-center">Didukung oleh Free AI Engine</p>
                 </div>
 
-                <!-- Chat Arena -->
                 <div class="flex-grow flex flex-col bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
                     <div class="bg-gradient-to-r from-teal-400 to-cyan-500 text-white p-3.5 flex items-center space-x-2">
                         <span class="bg-white/20 p-1.5 rounded-full"><i data-lucide="message-square" class="w-4 h-4"></i></span>
@@ -268,20 +241,18 @@
                         </div>
                     </div>
 
-                    <!-- Kolom Riwayat Chat -->
                     <div id="chat-messages" class="flex-grow p-4 overflow-y-auto space-y-4 custom-scrollbar">
                         <div class="flex items-start space-x-2.5">
                             <div class="bg-teal-500 text-white p-1.5 rounded-full shadow-sm text-sm">🤖</div>
-                            <div class="bg-slate-100 rounded-2xl rounded-tl-none p-3 max-w-[85%] text-xs sm:text-sm">
+                            <div class="bg-slate-100 rounded-2xl rounded-tl-none p-3 max-w-[85%] text-sm sm:text-base md:text-lg">
                                 <p class="font-bold text-teal-600 mb-0.5">Kiko Adventure</p>
                                 Halo Sahabat Kiko! 🌟 Aku Kiko. Kamu mau tahu atau bertanya tentang apa hari ini? Tanyakan saja padaku ya!
                             </div>
                         </div>
                     </div>
 
-                    <!-- Input Chat -->
                     <div class="p-3 bg-slate-50 border-t border-slate-100 flex items-center space-x-2">
-                        <input type="text" id="chat-input" placeholder="Tanyakan apa saja ke Kiko..." class="flex-grow bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-teal-400" onkeypress="handleChatKeyPress(event)">
+                        <input type="text" id="chat-input" placeholder="Tanyakan apa saja ke Kiko..." class="flex-grow bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400" onkeypress="handleChatKeyPress(event)">
                         <button onclick="sendChatMessage()" id="chat-send-btn" class="bg-teal-500 hover:bg-teal-600 text-white p-2.5 rounded-xl shadow-md transition">
                             <i data-lucide="send" class="w-4 h-4"></i>
                         </button>
@@ -290,9 +261,7 @@
             </div>
         </section>
 
-        <!-- ZONE 3: KUIS PINTAR AI -->
         <section id="zone-quiz" class="hidden flex-grow flex flex-col bg-white rounded-3xl shadow-sm border border-slate-100 p-5 min-h-[400px]">
-            <!-- Setup Kuis -->
             <div id="quiz-setup" class="space-y-5 max-w-lg mx-auto w-full py-4">
                 <div class="text-center space-y-1">
                     <span class="text-4xl">🎯</span>
@@ -320,7 +289,6 @@
                 <button onclick="changeZone('dashboard')" class="w-full text-center text-slate-400 hover:text-slate-600 font-bold text-xs transition">Kembali ke Beranda</button>
             </div>
 
-            <!-- Loader Kuis -->
             <div id="quiz-loading" class="hidden flex-col items-center justify-center space-y-4 py-16">
                 <div class="w-12 h-12 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
                 <div class="text-center">
@@ -329,7 +297,6 @@
                 </div>
             </div>
 
-            <!-- Tampilan Soal Kuis -->
             <div id="quiz-play" class="hidden space-y-4 max-w-lg mx-auto w-full py-2">
                 <div class="flex justify-between items-center border-b border-slate-100 pb-2">
                     <span class="text-purple-600 font-extrabold text-xs sm:text-sm" id="quiz-progress-text">Soal 1 dari 5</span>
@@ -337,12 +304,11 @@
                 </div>
 
                 <div class="bg-purple-50/50 border border-purple-100 rounded-2xl p-4 sm:p-5 text-center">
-                    <h3 class="text-base sm:text-lg font-black text-slate-800 leading-snug" id="quiz-question-text">Memuat pertanyaan...</h3>
+                    <h3 class="text-base sm:text-lg md:text-xl font-black text-slate-800 leading-snug" id="quiz-question-text">Memuat pertanyaan...</h3>
                 </div>
 
                 <div class="grid grid-cols-1 gap-2.5" id="quiz-options-container">
-                    <!-- Diisi dinamis -->
-                </div>
+                    </div>
 
                 <div class="flex justify-end pt-2">
                     <button id="quiz-next-btn" onclick="nextQuizQuestion()" class="hidden bg-purple-600 text-white font-bold px-5 py-2 rounded-xl shadow hover:bg-purple-700 transition flex items-center space-x-1 text-xs">
@@ -351,7 +317,6 @@
                 </div>
             </div>
 
-            <!-- Hasil Kuis -->
             <div id="quiz-result" class="hidden text-center space-y-5 max-w-sm mx-auto py-8">
                 <div class="space-y-1">
                     <span class="text-5xl" id="quiz-result-emoji">🎉</span>
@@ -377,9 +342,7 @@
             </div>
         </section>
 
-        <!-- ZONE 4: CERITA PETUALANGAN AI -->
         <section id="zone-story" class="hidden flex-grow flex flex-col bg-white rounded-3xl shadow-sm border border-slate-100 p-4 sm:p-5 min-h-[450px]">
-            <!-- Setup Cerita -->
             <div id="story-setup" class="space-y-5 max-w-lg mx-auto w-full py-4">
                 <div class="text-center space-y-1">
                     <span class="text-4xl">📚</span>
@@ -407,7 +370,6 @@
                 <button onclick="changeZone('dashboard')" class="w-full text-center text-slate-400 hover:text-slate-600 font-bold text-xs transition">Kembali ke Beranda</button>
             </div>
 
-            <!-- Loader Cerita -->
             <div id="story-loading" class="hidden flex-col items-center justify-center space-y-4 py-16">
                 <div class="w-12 h-12 border-4 border-amber-200 border-t-amber-500 rounded-full animate-spin"></div>
                 <div class="text-center">
@@ -416,27 +378,23 @@
                 </div>
             </div>
 
-            <!-- Tampilan Cerita Utama (MOBILE OPTIMIZED & SCROLLABLE FULL TEXT) -->
             <div id="story-display" class="hidden flex-grow flex flex-col max-w-xl mx-auto w-full py-1">
                 <div class="text-center mb-3 pb-2 border-b border-slate-100">
                     <h3 class="text-lg sm:text-xl font-black text-amber-700 leading-tight" id="story-title-text">Memuat Judul...</h3>
-                    <span class="text-[10px] text-slate-400 font-semibold uppercase">Dongeng Dongeng Edukatif Kiko</span>
+                    <span class="text-[10px] text-slate-400 font-semibold uppercase">Dongeng Edukatif Kiko</span>
                 </div>
 
-                <!-- Bagian Isi Cerita (Scrolling Halus, Tanpa Terpotong) -->
                 <div class="bg-amber-50/40 border border-amber-100 rounded-2xl p-4 sm:p-5 max-h-[300px] sm:max-h-[450px] overflow-y-auto mb-3 custom-scrollbar">
-                    <p class="text-xs sm:text-sm text-slate-700 leading-relaxed whitespace-pre-line" id="story-body-text">
+                    <p class="text-sm sm:text-base text-slate-700 leading-relaxed whitespace-pre-line" id="story-body-text">
                         Sedang mempersiapkan petualangan...
                     </p>
                 </div>
 
-                <!-- Kuis Pemahaman Cerita -->
                 <div class="bg-white border border-amber-200 rounded-2xl p-4 shadow-xs" id="story-challenge-box">
                     <p class="text-[10px] font-bold text-amber-600 uppercase mb-1">🎁 Kuis Pemahaman (Hadiah +20 Koin!)</p>
-                    <h4 class="font-bold text-xs sm:text-sm text-slate-800 mb-2" id="story-question-text">Pertanyaan dari cerita di atas...</h4>
+                    <h4 class="font-bold text-sm sm:text-base text-slate-800 mb-2" id="story-question-text">Pertanyaan dari cerita di atas...</h4>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2" id="story-options-container">
-                        <!-- Diisi dinamis -->
-                    </div>
+                        </div>
                 </div>
 
                 <div class="flex justify-between items-center mt-4">
@@ -450,7 +408,6 @@
             </div>
         </section>
 
-        <!-- ZONE 5: GENERATOR GAMBAR KREATIF -->
         <section id="zone-image-gen" class="hidden flex-grow flex flex-col bg-white rounded-3xl shadow-sm border border-slate-100 p-4 sm:p-5 min-h-[450px]">
             <div class="max-w-lg mx-auto w-full space-y-4 py-2">
                 <div class="text-center space-y-1">
@@ -459,9 +416,8 @@
                     <p class="text-slate-500 text-xs sm:text-sm">Ketik imajinasimu untuk membuat foto asli, lalu hias dengan corat-coret sentuhan kreatifmu!</p>
                 </div>
 
-                <!-- Input Prompt -->
                 <div class="space-y-2">
-                    <label class="block text-xs sm:text-sm font-bold text-slate-700">Yuk, Gambar Keajaiban di Pikiranmu! (Bikin Jadi Foto Beneran):</label>
+                    <label class="block text-xs sm:text-sm font-bold text-slate-700">Yuk, Gambar Keajaiban di Pikiranmu! :</label>
                     <div class="flex gap-2">
                         <input type="text" id="image-prompt-input" placeholder="Contoh: Kucing lucu mengendarai mobil merah di jalan kota asli" class="flex-grow border border-slate-200 rounded-xl px-3 py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-pink-400">
                         <button onclick="generateAIImage()" class="bg-pink-500 hover:bg-pink-600 text-white font-extrabold px-4 rounded-xl text-xs flex items-center space-x-1">
@@ -471,23 +427,22 @@
                     <div class="flex flex-wrap gap-1.5 pt-1 items-center">
                         <span class="text-[10px] text-slate-400 font-bold">Ide Seru Realistis:</span>
                         <button onclick="fillImagePrompt('Gajah kecil sedang mandi di sungai hutan tropis asli')" class="bg-pink-50 hover:bg-pink-100 text-pink-600 text-[10px] px-2.5 py-0.5 rounded-full font-bold transition">🐘 Gajah di Hutan</button>
-                        <button onclick="fillImagePrompt('Anak anjing golden retriever lucu sedang bermain bola di taman berumput nyata')" class="bg-pink-50 hover:bg-pink-100 text-pink-600 text-[10px] px-2.5 py-0.5 rounded-full font-bold transition">🐶 Anak Anjing di Taman</button>
+                        <button onclick="fillImagePrompt('Anak anjing golden retriever lucu bermain bola di taman berumput nyata')" class="bg-pink-50 hover:bg-pink-100 text-pink-600 text-[10px] px-2.5 py-0.5 rounded-full font-bold transition">🐶 Anak Anjing</button>
                     </div>
                 </div>
 
-                <!-- Toolbar Mewarnai / Menggambar Interaktif -->
                 <div class="bg-slate-50 border border-slate-100 p-3 rounded-2xl space-y-2">
                     <div class="flex flex-wrap items-center justify-between gap-2">
                         <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Pilih Krayon:</span>
                         <div class="flex items-center space-x-1.5" id="color-palette">
-                            <button onclick="setBrushColor('#ef4444', this)" class="w-6 h-6 rounded-full bg-red-500 border-2 border-white ring-2 ring-red-500 scale-110 transition color-swatch"></button>
+                            <button onclick="setBrushColor('#ef4444', this)" class="w-6 h-6 rounded-full bg-red-500 border-2 border-white ring-2 ring-indigo-500 scale-110 transition color-swatch"></button>
                             <button onclick="setBrushColor('#f97316', this)" class="w-6 h-6 rounded-full bg-orange-500 border-2 border-white transition color-swatch"></button>
                             <button onclick="setBrushColor('#eab308', this)" class="w-6 h-6 rounded-full bg-yellow-500 border-2 border-white transition color-swatch"></button>
                             <button onclick="setBrushColor('#22c55e', this)" class="w-6 h-6 rounded-full bg-green-500 border-2 border-white transition color-swatch"></button>
                             <button onclick="setBrushColor('#3b82f6', this)" class="w-6 h-6 rounded-full bg-blue-500 border-2 border-white transition color-swatch"></button>
                             <button onclick="setBrushColor('#a855f7', this)" class="w-6 h-6 rounded-full bg-purple-500 border-2 border-white transition color-swatch"></button>
                             <button onclick="setBrushColor('#0f172a', this)" class="w-6 h-6 rounded-full bg-slate-900 border-2 border-white transition color-swatch"></button>
-                            <button onclick="setEraser(this)" class="w-7 h-7 rounded-lg bg-white border border-slate-200 text-xs flex items-center justify-center shadow-xs transition color-swatch" title="Penghapus Corat-Coret">🧽</button>
+                            <button onclick="setEraser(this)" class="w-7 h-7 rounded-lg bg-white border border-slate-200 text-xs flex items-center justify-center shadow-xs transition color-swatch" title="Penghapus">🧽</button>
                         </div>
                     </div>
                     
@@ -502,24 +457,20 @@
                     </div>
                 </div>
 
-                <!-- Arena Gambar Hasil & Menggambar Canvas Interaktif -->
                 <div class="border-2 border-slate-200 rounded-3xl h-72 sm:h-80 flex flex-col items-center justify-center bg-white overflow-hidden relative shadow-inner" id="image-result-box">
-                    <!-- Canvas Menggambar Anak-Anak -->
-                    <canvas id="creative-canvas" width="600" height="600" class="w-full h-full object-contain cursor-crosshair z-10Touch"></canvas>
+                    <canvas id="creative-canvas" width="600" height="600" class="w-full h-full object-contain cursor-crosshair z-10"></canvas>
 
-                    <!-- Loading state -->
-                    <div id="image-loading" class="hidden absolute inset-0 bg-white/95 z-20 flex-col items-center justify-center space-y-2">
+                    <div id="image-loading" class="hidden absolute inset-0 bg-white/95 z-20 flex flex-col items-center justify-center space-y-2">
                         <div class="flex justify-center space-x-1 mx-auto my-2">
                             <span class="w-3.5 h-3.5 bg-pink-500 rounded-full dot-pulse"></span>
                             <span class="w-3.5 h-3.5 bg-pink-500 rounded-full dot-pulse"></span>
                             <span class="w-3.5 h-3.5 bg-pink-500 rounded-full dot-pulse"></span>
                         </div>
                         <p class="font-bold text-slate-700 text-xs sm:text-sm">Kiko sedang mengambil foto nyata...</p>
-                        <p class="text-slate-400 text-[10px]">Tunggu sebentar ya, AI sedang memproses imajinasimu...</p>
+                        <p class="text-slate-400 text-[10px]">Tunggu sebentar ya, Kiko sedang memproses imajinasimu...</p>
                     </div>
                 </div>
 
-                <!-- Menu download -->
                 <div class="flex justify-between items-center text-xs">
                     <button onclick="changeZone('dashboard')" class="text-slate-400 hover:text-slate-600 font-bold">Kembali ke Beranda</button>
                     <button id="download-image-btn" onclick="saveImageToGallery()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold px-4 py-2 rounded-xl flex items-center space-x-1">
@@ -529,9 +480,7 @@
             </div>
         </section>
 
-        <!-- ZONE 6: MINI GAME BALON ANGKA (MATH CHALLENGE) -->
         <section id="zone-game" class="hidden flex-grow flex flex-col bg-slate-900 rounded-3xl shadow-lg overflow-hidden border border-slate-800 p-4 relative text-white min-h-[460px]">
-            <!-- Start Game UI overlay -->
             <div id="game-start-screen" class="absolute inset-0 bg-slate-900/95 z-20 flex flex-col items-center justify-center p-5 text-center space-y-3">
                 <span class="text-4xl animate-bounce">🎈</span>
                 <h2 class="text-2xl font-black text-emerald-400">Balon Angka Matematika!</h2>
@@ -547,7 +496,6 @@
                 <button onclick="changeZone('dashboard')" class="text-slate-400 hover:text-slate-300 font-bold text-xs">Kembali</button>
             </div>
 
-            <!-- Game Over Screen Overlay -->
             <div id="game-over-screen" class="hidden absolute inset-0 bg-slate-950/95 z-20 flex flex-col items-center justify-center p-5 text-center space-y-3">
                 <span class="text-4xl">💥</span>
                 <h2 class="text-2xl font-black text-rose-500">Permainan Selesai!</h2>
@@ -570,7 +518,6 @@
                 </div>
             </div>
 
-            <!-- Game Board UI -->
             <div class="flex justify-between items-center border-b border-slate-800 pb-2 mb-2 z-10 text-xs">
                 <div class="flex items-center space-x-3">
                     <div>
@@ -589,21 +536,16 @@
                 <button onclick="exitGame()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
             </div>
 
-            <!-- Canvas Arena Game -->
             <div class="flex-grow bg-slate-950 rounded-2xl relative overflow-hidden border border-slate-800" id="game-arena">
-                <!-- Spikes/Duri visual di bagian bawah -->
                 <div class="absolute bottom-0 left-0 right-0 h-4 bg-rose-950/40 border-t border-rose-500/50 flex items-center justify-around overflow-hidden">
                     <div class="text-rose-500 font-black text-[9px] select-none w-full text-center tracking-widest">▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲</div>
                 </div>
-
-                <!-- Balon-Balon ditambahkan disini -->
                 <div id="balloons-container" class="absolute inset-0 pb-4 overflow-hidden"></div>
             </div>
         </section>
 
     </main>
 
-    <!-- Footer Copyright -->
     <footer class="bg-slate-100 text-slate-400 text-center py-3 text-[10px] sm:text-xs font-semibold border-t border-slate-200 mt-auto">
         <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-1.5">
             <span>&copy; 2026 Petualangan Belajar Kiko.</span>
@@ -611,7 +553,6 @@
         </div>
     </footer>
 
-    <!-- STYLING_CHUNK: Running complete game setup and APIs with error-free JS scripts -->
     <script>
         // Status State Pemain (Sistem Gamifikasi)
         let playerState = {
@@ -649,9 +590,9 @@
 
                 if (type === 'success') {
                     osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
-                    osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
-                    osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2); // G5
+                    osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
+                    osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2);
                     gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
                     gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
                     osc.start();
@@ -695,11 +636,9 @@
         function updateGamificationUI() {
             document.getElementById('player-level').innerText = playerState.level;
             document.getElementById('player-coins').innerText = playerState.coins;
-            
             const xpNeeded = playerState.level * 100;
             const percentage = Math.min((playerState.xp / xpNeeded) * 100, 100);
             document.getElementById('player-xp-bar').style.width = `${percentage}%`;
-
             renderBadges();
         }
 
@@ -729,7 +668,7 @@
                 saveState();
                 return true;
             }
-            showCustomModal("🪙 Koinmu Tidak Cukup", "Duh, koinmu tidak cukup untuk membeli fitur ini. Kumpulkan koin dengan cara memainkan kuis ya!");
+            showCustomModal("🪙 Koinmu Tidak Cukup", "Duh, koinmu tidak cukup untuk bertualang fitur ini. Kumpulkan koin dengan menyelesaikan kuis ya!");
             playSound('error');
             return false;
         }
@@ -765,30 +704,22 @@
 
         function changeZone(zoneId) {
             playSound('click');
-            
-            // Sembunyikan semua zona terlebih dahulu
             ['dashboard', 'chat', 'quiz', 'story', 'image-gen', 'game'].forEach(zone => {
                 const element = document.getElementById(`zone-${zone}`);
                 if (element) element.classList.add('hidden');
             });
 
-            // Hentikan permainan balon jika keluar dari area game
             if (zoneId !== 'game-balloon') {
                 clearInterval(gameInterval);
                 clearInterval(balloonSpawnInterval);
                 gameActive = false;
             }
 
-            // Petakan tombol klik ke kontainer id zona
             let targetId = zoneId;
-            if (zoneId === 'game-balloon') {
-                targetId = 'game';
-            }
+            if (zoneId === 'game-balloon') targetId = 'game';
 
             const targetZone = document.getElementById(`zone-${targetId}`);
-            if (targetZone) {
-                targetZone.classList.remove('hidden');
-            }
+            if (targetZone) targetZone.classList.remove('hidden');
 
             if (targetId === 'chat') {
                 const chatBox = document.getElementById('chat-messages');
@@ -798,7 +729,6 @@
             } else if (targetId === 'image-gen') {
                 setTimeout(initDrawingCanvas, 100);
             }
-
             lucide.createIcons();
         }
 
@@ -814,6 +744,19 @@
             document.getElementById('custom-modal').classList.add('hidden');
         }
 
+      function showToast(text, icon = '🎉') {
+            const toast = document.getElementById('toast-message');
+            document.getElementById('toast-icon').innerText = icon;
+            document.getElementById('toast-text').innerText = text;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 2500);
+        }
+
+        function triggerConfetti() {
+            confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 } });
+        }
+
+        // --- MANIPULASI CANVAS GAMBAR ---
         let creativeCanvas, canvasCtx;
         let isDrawing = false;
         let brushColor = '#ef4444';
@@ -824,16 +767,13 @@
             creativeCanvas = document.getElementById('creative-canvas');
             if (!creativeCanvas) return;
             canvasCtx = creativeCanvas.getContext('2d');
-            
             clearCanvasOnly();
 
-            // Setup Mouse Events (PC)
             creativeCanvas.addEventListener('mousedown', startDoodle);
             creativeCanvas.addEventListener('mousemove', drawDoodle);
             creativeCanvas.addEventListener('mouseup', stopDoodle);
             creativeCanvas.addEventListener('mouseleave', stopDoodle);
 
-            // Setup Touch Events (HP/Tablet)
             creativeCanvas.addEventListener('touchstart', (e) => {
                 e.preventDefault();
                 startDoodle(e);
@@ -846,24 +786,14 @@
 
             const sizeSlider = document.getElementById('brush-size-slider');
             if (sizeSlider) {
-                sizeSlider.addEventListener('input', (e) => {
-                    brushSize = e.target.value;
-                });
+                sizeSlider.addEventListener('input', (e) => { brushSize = e.target.value; });
             }
         }
 
         function getCanvasCoordinates(e) {
             const rect = creativeCanvas.getBoundingClientRect();
-            let clientX, clientY;
-
-            if (e.touches && e.touches.length > 0) {
-                clientX = e.touches[0].clientX;
-                clientY = e.touches[0].clientY;
-            } else {
-                clientX = e.clientX;
-                clientY = e.clientY;
-            }
-
+            let clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            let clientY = e.touches ? e.touches[0].clientY : e.clientY;
             const x = ((clientX - rect.left) / rect.width) * creativeCanvas.width;
             const y = ((clientY - rect.top) / rect.height) * creativeCanvas.height;
             return { x, y };
@@ -879,7 +809,6 @@
         function drawDoodle(e) {
             if (!isDrawing) return;
             const pos = getCanvasCoordinates(e);
-            
             canvasCtx.lineTo(pos.x, pos.y);
             canvasCtx.strokeStyle = brushColor;
             canvasCtx.lineWidth = brushSize;
@@ -888,10 +817,7 @@
             canvasCtx.stroke();
         }
 
-        function stopDoodle() {
-            isDrawing = false;
-            canvasCtx.closePath();
-        }
+        function stopDoodle() { isDrawing = false; canvasCtx.closePath(); }
 
         function setBrushColor(color, element) {
             playSound('click');
@@ -907,17 +833,14 @@
 
         function highlightActiveTool(selectedElement) {
             document.querySelectorAll('.color-swatch').forEach(btn => {
-                btn.classList.remove('ring-2', 'ring-red-500', 'ring-indigo-500', 'scale-110');
+                btn.classList.remove('ring-2', 'ring-indigo-500', 'scale-110');
             });
-            if (selectedElement) {
-                selectedElement.classList.add('ring-2', 'ring-indigo-500', 'scale-110');
-            }
+            if (selectedElement) selectedElement.classList.add('ring-2', 'ring-indigo-500', 'scale-110');
         }
 
         function clearCanvasOnly() {
             if (!canvasCtx) return;
             canvasCtx.clearRect(0, 0, creativeCanvas.width, creativeCanvas.height);
-            
             if (canvasBgImage) {
                 canvasCtx.drawImage(canvasBgImage, 0, 0, creativeCanvas.width, creativeCanvas.height);
             } else {
@@ -926,26 +849,27 @@
             }
         }
 
+        // --- INTEGRASI INSTAN CHAT AI TUTOR ---
         async function fetchFreeTextAI(systemPrompt, userPrompt) {
             const url = "https://text.pollinations.ai/";
-            const payload = {
-                messages: [
-                    { role: "system", content: systemPrompt },
-                    { role: "user", content: userPrompt }
-                ],
-                seed: Math.floor(Math.random() * 1000000)
-            };
-
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            if (!response.ok) {
-                throw new Error("Gagal memperoleh respon cerdas dari Kiko AI.");
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        messages: [
+                            { role: "system", content: systemPrompt },
+                            { role: "user", content: userPrompt }
+                        ],
+                        model: "openai"
+                    })
+                });
+                if (!response.ok) throw new Error("Kiko sedang memulihkan tenaga ajaibnya..");
+                return await response.text();
+            } catch (error) {
+                console.error("Error API:", error);
+                throw error;
             }
-            return await response.text();
         }
 
         async function sendChatMessage() {
@@ -957,19 +881,32 @@
             input.value = '';
             appendChatMessage('Kamu', message, 'user');
 
-            const typingId = appendChatMessage('Kiko AI', 'Sedang mencari penjelasan terbaik...', 'ai', true);
+            const typingId = appendChatMessage('Kiko Adventure', `
+                <div class="flex items-center space-x-1 py-1">
+                    <span class="w-2 h-2 bg-teal-500 rounded-full animate-bounce"></span>
+                    <span class="w-2 h-2 bg-teal-500 rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                    <span class="w-2 h-2 bg-teal-500 rounded-full animate-bounce [animation-delay:0.4s]"></span>
+                </div>
+            `, 'ai', true);
 
-            const systemPrompt = "Kamu adalah Kiko, asisten robot AI yang sangat ceria, lucu, dan penuh semangat untuk anak Sekolah Dasar (SD) umur 6-12 tahun. Jawab pertanyaan mereka dengan bahasa Indonesia yang sangat sederhana, asyik, gunakan banyak analogi mainan, serta sisipkan banyak sekali emoji ceria agar anak senang membaca. Berikan dorongan belajar di setiap akhir kalimat obrolan!";
+            const systemPrompt = "Kamu adalah Kiko, asisten robot AI ceria untuk anak SD (6-12 tahun). Jawab pertanyaan bahasa Indonesia dengan sangat sederhana, pendek, asyik, penuh emoji, analogi mainan, dan beri dorongan belajar di akhir kalimat! JANGAN PERNAH gunakan tanda bintang ganda atau teks tebal markdown (seperti **teks**) dalam jawabanmu. Ketik teks biasa saja secara polos agar mudah dibaca anak kecil.";
 
             try {
-                const aiResponse = await fetchFreeTextAI(systemPrompt, message);
-                document.getElementById(typingId).innerHTML = `<p class="font-bold text-teal-600 mb-0.5 text-xs sm:text-sm">Kiko AI</p>${aiResponse}`;
+                let aiResponse = await fetchFreeTextAI(systemPrompt, message);
+                
+                aiResponse = aiResponse.replace(/\*\*/g, '');
+
+                const targetMsg = document.getElementById(typingId);
+                if (targetMsg) {
+                    targetMsg.classList.remove('animate-pulse', 'text-slate-400');
+                    targetMsg.innerHTML = `<p class="font-bold text-teal-600 mb-0.5 text-sm sm:text-base">Kiko Adventure 🤖</p><div class="text-sm sm:text-base md:text-lg leading-relaxed">${aiResponse}</div>`;
+                }
                 addXP(15);
             } catch (err) {
-                document.getElementById(typingId).innerHTML = `<p class="font-bold text-rose-600 mb-0.5 text-xs sm:text-sm">Oops! Gangguan</p>${err.message}`;
+                const targetMsg = document.getElementById(typingId);
+                if (targetMsg) targetMsg.innerHTML = `<p class="font-bold text-rose-600 mb-0.5 text-xs sm:text-sm">Oops! Maaf Sahabat</p>Kiko agak pusing. Boleh coba tanyakan lagi? ✨`;
                 playSound('error');
             }
-            
             const chatBox = document.getElementById('chat-messages');
             chatBox.scrollTop = chatBox.scrollHeight;
         }
@@ -982,24 +919,40 @@
             
             if (role === 'user') {
                 div.innerHTML = `
-                    <div class="bg-indigo-100 rounded-2xl rounded-tr-none p-3 max-w-[85%] text-xs sm:text-sm shadow-xs">
-                        <p class="font-bold text-indigo-600 mb-0.5">Kamu</p>
-                        ${text}
+                    <div class="bg-indigo-100 rounded-2xl rounded-tr-none p-3 max-w-[85%] text-sm sm:text-base md:text-lg shadow-xs">
+                        <p class="font-bold text-indigo-600 mb-0.5">Kamu</p>${text}
                     </div>
                     <div class="bg-indigo-500 text-white p-1.5 rounded-full shadow-sm text-sm">🧒</div>
                 `;
             } else {
                 div.innerHTML = `
                     <div class="bg-teal-500 text-white p-1.5 rounded-full shadow-sm text-sm">🤖</div>
-                    <div id="${messageId}" class="bg-slate-100 rounded-2xl rounded-tl-none p-3 max-w-[85%] text-xs sm:text-sm shadow-xs ${isTyping ? 'animate-pulse text-slate-400' : ''}">
-                        <p class="font-bold text-teal-600 mb-0.5">${sender}</p>
-                        ${text}
+                    <div id="${messageId}" class="bg-slate-100 rounded-2xl rounded-tl-none p-3 max-w-[85%] text-sm sm:text-base md:text-lg shadow-xs ${isTyping ? 'animate-pulse text-slate-400' : ''}">
+                        <p class="font-bold text-teal-600 mb-0.5">${sender}</p>${text}
                     </div>
                 `;
             }
             chatBox.appendChild(div);
             chatBox.scrollTop = chatBox.scrollHeight;
             return messageId;
+        }
+
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') { sendChatMessage(); }
+        }
+
+        function fillChatMessage(text) {
+            document.getElementById('chat-input').value = text;
+        }
+
+        function clearChatHistory() {
+            document.getElementById('chat-messages').innerHTML = `
+                <div class="flex items-start space-x-2.5">
+                    <div class="bg-teal-500 text-white p-1.5 rounded-full shadow-sm text-sm">🤖</div>
+                    <div class="bg-slate-100 rounded-2xl rounded-tl-none p-3 max-w-[85%] text-sm sm:text-base">
+                        <p class="font-bold text-teal-600 mb-0.5">Kiko Adventure</p>Riwayat dibersihkan! Yuk tanya Kiko lagi! 🌟
+                    </div>
+                </div>`;
         }
 
         // --- ZONA 3: KUIS PINTAR AI ---
@@ -1013,9 +966,7 @@
             selectedQuizTopic = topic;
             document.querySelectorAll('.quiz-topic-btn').forEach(btn => {
                 btn.classList.remove('border-purple-600', 'bg-purple-100');
-                if (btn.innerText.includes(topic.split(' ')[0])) {
-                    btn.classList.add('border-purple-600', 'bg-purple-100');
-                }
+                if (btn.innerText.includes(topic.split(' ')[0])) btn.classList.add('border-purple-600', 'bg-purple-100');
             });
         }
 
@@ -1031,21 +982,10 @@
             document.getElementById('quiz-setup').classList.add('hidden');
             document.getElementById('quiz-loading').classList.remove('hidden');
 
-            const systemPrompt = `Kamu adalah pembuat kuis edukatif seru untuk sekolah dasar (SD). Tugasmu adalah memberikan output berupa JSON Array murni yang berisi 5 objek pertanyaan. Contoh struktur objek JSON:
-[
-  {
-    "question": "Benda apa di tata surya yang memancarkan cahayanya sendiri?",
-    "options": ["Bulan", "Bintang Matahari", "Bumi", "Mars"],
-    "answer": "Bintang Matahari",
-    "explanation": "Matahari adalah sebuah bintang raksasa yang mampu memancarkan energi cahayanya sendiri!"
-  }
-]
-Keluarkan JSON mentah saja, tanpa menggunakan kata pembuka, tanda backtick markdown, ataupun format tambahan lainnya.`;
-
-            const userPrompt = `Buatkan kuis dengan topik "${topicToUse}" sebanyak 5 soal seru untuk anak SD.`;
+            const systemPrompt = `Kamu adalah pembuat kuis anak SD. Berikan output berupa JSON Array murni berisi 5 objek kuis tanpa tanda backtick markdown ataupun kata pembuka. Struktur JSON: [{"question": "Soal?", "options": ["A", "B", "C", "D"], "answer": "B", "explanation": "Alasan"}]`;
 
             try {
-                const responseText = await fetchFreeTextAI(systemPrompt, userPrompt);
+                const responseText = await fetchFreeTextAI(systemPrompt, `Buatkan kuis topik "${topicToUse}" 5 soal anak SD.`);
                 const cleanJson = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
                 currentQuizData = JSON.parse(cleanJson);
                 currentQuizIndex = 0;
@@ -1055,8 +995,7 @@ Keluarkan JSON mentah saja, tanpa menggunakan kata pembuka, tanda backtick markd
                 document.getElementById('quiz-play').classList.remove('hidden');
                 displayQuizQuestion();
             } catch(e) {
-                console.error(e);
-                showCustomModal("Gagal Membuat Kuis", "Duh, AI sedang kelebihan beban. Tolong ulangi langkah pengerjaan kuis sekali lagi.");
+                showCustomModal("Gagal Membuat Kuis", "Server AI sibuk, silakan klik ulangi pembuatan kuis.");
                 document.getElementById('quiz-loading').classList.add('hidden');
                 document.getElementById('quiz-setup').classList.remove('hidden');
                 playSound('error');
@@ -1074,49 +1013,43 @@ Keluarkan JSON mentah saja, tanpa menggunakan kata pembuka, tanda backtick markd
             
             questionObj.options.forEach(opt => {
                 const btn = document.createElement('button');
-                btn.className = "w-full text-left bg-white border-2 border-slate-200 hover:border-purple-400 p-3.5 rounded-2xl font-bold text-xs sm:text-sm transition flex justify-between items-center";
+                btn.className = "w-full text-left bg-white border-2 border-slate-200 hover:border-purple-400 p-3.5 rounded-2xl font-bold text-sm sm:text-base transition flex justify-between items-center";
                 btn.innerHTML = `<span>${opt}</span><span class="option-icon hidden"></span>`;
                 btn.onclick = () => selectQuizAnswer(btn, opt, questionObj.answer, questionObj.explanation);
                 container.appendChild(btn);
             });
-
             document.getElementById('quiz-next-btn').classList.add('hidden');
         }
 
         function selectQuizAnswer(selectedBtn, chosenOpt, correctOpt, explanation) {
             const allButtons = document.querySelectorAll('#quiz-options-container button');
             allButtons.forEach(btn => btn.disabled = true);
-
             const isCorrect = (chosenOpt === correctOpt);
             
             if (isCorrect) {
-                selectedBtn.classList.remove('border-slate-200');
-                selectedBtn.classList.add('border-emerald-500', 'bg-emerald-50');
+                selectedBtn.className = "w-full text-left border-2 border-emerald-500 bg-emerald-50 p-3.5 rounded-2xl font-bold text-sm sm:text-base flex justify-between items-center";
                 selectedBtn.querySelector('.option-icon').innerHTML = "🟢 Benar!";
                 selectedBtn.querySelector('.option-icon').classList.remove('hidden');
                 quizScore += 20;
                 playSound('success');
             } else {
-                selectedBtn.classList.remove('border-slate-200');
-                selectedBtn.classList.add('border-rose-500', 'bg-rose-50');
+                selectedBtn.className = "w-full text-left border-2 border-rose-500 bg-rose-50 p-3.5 rounded-2xl font-bold text-sm sm:text-base flex justify-between items-center";
                 selectedBtn.querySelector('.option-icon').innerHTML = "🔴 Salah";
                 selectedBtn.querySelector('.option-icon').classList.remove('hidden');
                 
                 allButtons.forEach(btn => {
                     if (btn.innerText.includes(correctOpt)) {
-                        btn.classList.add('border-emerald-500', 'bg-emerald-50');
+                        btn.className = "w-full text-left border-2 border-emerald-500 bg-emerald-50 p-3.5 rounded-2xl font-bold text-sm sm:text-base flex justify-between items-center";
                     }
                 });
                 playSound('error');
             }
 
-            const explanationBox = document.createElement('div');
-            explanationBox.className = "mt-3 p-3 bg-indigo-50 border border-indigo-100/50 rounded-xl text-xs text-indigo-900 leading-relaxed";
-            explanationBox.innerHTML = `<strong>Kiko Menjelaskan:</strong> ${explanation}`;
-            document.getElementById('quiz-options-container').appendChild(explanationBox);
-
+            const expBox = document.createElement('div');
+            expBox.className = "mt-3 p-3 bg-indigo-50 border border-indigo-100/50 rounded-xl text-sm text-indigo-900 leading-relaxed";
+            expBox.innerHTML = `<strong>Kiko Menjelaskan:</strong> ${explanation.replace(/\*\*/g, '')}`;
+            document.getElementById('quiz-options-container').appendChild(expBox);
             document.getElementById('quiz-next-btn').classList.remove('hidden');
-            lucide.createIcons();
         }
 
         function nextQuizQuestion() {
@@ -1132,24 +1065,20 @@ Keluarkan JSON mentah saja, tanpa menggunakan kata pembuka, tanda backtick markd
         function finishQuiz() {
             document.getElementById('quiz-play').classList.add('hidden');
             document.getElementById('quiz-result').classList.remove('hidden');
-
             document.getElementById('quiz-final-score').innerText = `${quizScore}/100`;
             const coinWon = Math.round(quizScore * 0.2);
             addCoins(coinWon);
             addXP(quizScore * 0.5);
-
             document.getElementById('quiz-coin-reward').innerText = `+${coinWon} 🪙`;
 
             if (quizScore === 100) {
                 document.getElementById('quiz-result-emoji').innerText = "👑";
                 document.getElementById('quiz-result-title').innerText = "Juara Kuis Sempurna!";
-                document.getElementById('quiz-result-subtitle').innerText = "Luar biasa cerdas! Kamu menjawab semuanya dengan benar.";
                 unlockBadge('quiz-master');
                 triggerConfetti();
             } else {
                 document.getElementById('quiz-result-emoji').innerText = "🎉";
                 document.getElementById('quiz-result-title').innerText = "Petualangan Selesai!";
-                document.getElementById('quiz-result-subtitle').innerText = "Latihan terus menerus agar menjadi juara masa depan!";
             }
         }
 
@@ -1161,12 +1090,10 @@ Keluarkan JSON mentah saja, tanpa menggunakan kata pembuka, tanda backtick markd
             playSound('click');
             selectedStoryTheme = theme;
             const customInput = document.getElementById('custom-story-theme');
-            if (customInput) customInput.value = ''; // Reset input kustom jika anak menekan tombol preset
+            if (customInput) customInput.value = '';
             document.querySelectorAll('.story-theme-btn').forEach(btn => {
                 btn.classList.remove('border-amber-600', 'bg-amber-100');
-                if (btn.innerText.includes(theme.split(' ')[0])) {
-                    btn.classList.add('border-amber-600', 'bg-amber-100');
-                }
+                if (btn.innerText.includes(theme.split(' ')[0])) btn.classList.add('border-amber-600', 'bg-amber-100');
             });
         }
 
@@ -1189,45 +1116,33 @@ Keluarkan JSON mentah saja, tanpa menggunakan kata pembuka, tanda backtick markd
             document.getElementById('story-setup').classList.add('hidden');
             document.getElementById('story-loading').classList.remove('hidden');
 
-            const systemPrompt = `Kamu adalah seorang penulis cerita anak legendaris. Ciptakan cerita petualangan fantasi mendidik untuk anak SD sepanjang 3 paragraf lengkap. Di akhir cerita, wajib berikan satu pertanyaan kuis pemahaman bacaan yang memiliki 4 opsi jawaban pilihan ganda.
-Kembalikan respon HANYA dalam format JSON objek terstruktur murni seperti ini:
-{
-  "title": "Petualangan Kiko Menjelajah Angkasa",
-  "story": "Paragraf 1...\\n\\nParagraf 2...\\n\\nParagraf 3...",
-  "question": "Apa nama benda yang ditemukan Kiko?",
-  "options": ["Opsi A", "Opsi B", "Opsi C", "Opsi D"],
-  "answer": "Opsi B",
-  "explanation": "Penjelasan mengapa opsi B adalah jawaban benar berdasarkan cerita di atas."
-}
-Hindari membungkus JSON dengan format markdown backtick, kembalikan teks JSON mentah agar siap diparse langsung oleh kode.`;
+            const systemPrompt = `Kamu penulis dongeng anak SD. Berikan output berupa JSON objek murni tanpa markdown backtick berisi properti: "title", "story" (3 paragraf), "question", "options" (4 pilihan), "answer", "explanation". JANGAN gunakan simbol tebal markdown (**) dalam semua properti teks.`;
 
             try {
-                const responseText = await fetchFreeTextAI(systemPrompt, `Buat cerita tentang "${themeToUse}" untuk anak SD.`);
+                const responseText = await fetchFreeTextAI(systemPrompt, `Buat cerita fiksi bertema "${themeToUse}" anak SD.`);
                 const cleanJson = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
                 currentStoryData = JSON.parse(cleanJson);
 
                 document.getElementById('story-loading').classList.add('hidden');
                 document.getElementById('story-display').classList.remove('hidden');
 
-                document.getElementById('story-title-text').innerText = currentStoryData.title;
-                document.getElementById('story-body-text').innerText = currentStoryData.story;
-                document.getElementById('story-question-text').innerText = currentStoryData.question;
+                document.getElementById('story-title-text').innerText = currentStoryData.title.replace(/\*\*/g, '');
+                document.getElementById('story-body-text').innerText = currentStoryData.story.replace(/\*\*/g, '');
+                document.getElementById('story-question-text').innerText = currentStoryData.question.replace(/\*\*/g, '');
 
                 const optionsContainer = document.getElementById('story-options-container');
                 optionsContainer.innerHTML = '';
                 
                 currentStoryData.options.forEach(opt => {
                     const btn = document.createElement('button');
-                    btn.className = "w-full text-left bg-slate-50 border border-slate-200 hover:border-amber-400 p-2.5 rounded-xl font-bold text-[11px] sm:text-xs transition flex justify-between items-center";
-                    btn.innerHTML = `<span>${opt}</span><span class="story-opt-icon hidden"></span>`;
+                    btn.className = "w-full text-left bg-slate-50 border border-slate-200 hover:border-amber-400 p-2.5 rounded-xl font-bold text-xs sm:text-sm transition flex justify-between items-center";
+                    btn.innerHTML = `<span>${opt.replace(/\*\*/g, '')}</span><span class="story-opt-icon hidden"></span>`;
                     btn.onclick = () => checkStoryAnswer(btn, opt);
                     optionsContainer.appendChild(btn);
                 });
-
                 document.getElementById('story-finish-btn').classList.add('hidden');
             } catch(e) {
-                console.error(e);
-                showCustomModal("Gagal Membuat Cerita", "Kiko kehabisan tinta ajaib untuk merajut cerita baru. Yuk, klik ulangi pengerjaan dongeng!");
+                showCustomModal("Gagal Membuat Cerita", "Kiko kehabisan tinta dongeng ajaib. Yuk coba lagi.");
                 document.getElementById('story-loading').classList.add('hidden');
                 document.getElementById('story-setup').classList.remove('hidden');
                 playSound('error');
@@ -1238,7 +1153,6 @@ Hindari membungkus JSON dengan format markdown backtick, kembalikan teks JSON me
             const correctOpt = currentStoryData.answer;
             const allButtons = document.querySelectorAll('#story-options-container button');
             allButtons.forEach(btn => btn.disabled = true);
-
             const isCorrect = (chosenOpt === correctOpt);
 
             if (isCorrect) {
@@ -1248,36 +1162,30 @@ Hindari membungkus JSON dengan format markdown backtick, kembalikan teks JSON me
                 addCoins(20);
                 addXP(30);
                 playSound('success');
-                showToast("Jawaban Benar! +20 Koin Pembaca Pintar!", "🪙");
                 triggerConfetti();
             } else {
                 selectedBtn.classList.add('border-rose-500', 'bg-rose-50');
                 selectedBtn.querySelector('.story-opt-icon').innerHTML = "🔴 Salah";
                 selectedBtn.querySelector('.story-opt-icon').classList.remove('hidden');
-                
                 allButtons.forEach(btn => {
-                    if (btn.innerText.includes(correctOpt)) {
-                        btn.classList.add('border-emerald-500', 'bg-emerald-50');
-                    }
+                    if (btn.innerText.includes(correctOpt)) btn.classList.add('border-emerald-500', 'bg-emerald-50');
                 });
                 playSound('error');
             }
 
             const exp = document.createElement('div');
-            exp.className = "mt-2 p-2.5 bg-amber-50 rounded-xl text-[10px] text-amber-900";
-            exp.innerHTML = `<strong>Fakta Edukatif:</strong> ${currentStoryData.explanation}`;
+            exp.className = "mt-2 p-2.5 bg-amber-50 rounded-xl text-xs text-amber-900";
+            exp.innerHTML = `<strong>Fakta Edukatif:</strong> ${currentStoryData.explanation.replace(/\*\*/g, '')}`;
             document.getElementById('story-options-container').appendChild(exp);
-
             document.getElementById('story-finish-btn').classList.remove('hidden');
         }
 
         function finishStoryAdventure() {
             playSound('click');
             changeZone('dashboard');
-            showToast("Hore, kamu menyelesaikan dongeng membaca!", "📚");
         }
 
-        // --- ZONA 5: GENERATOR GAMBAR KREATIF (INSTAN TANPA KUNCI - FLUX REALISM) ---
+        // --- ZONA 5: INTEGRASI FOTO AJAIB AI REALISTIS ---
         function fillImagePrompt(text) {
             document.getElementById('image-prompt-input').value = text;
         }
@@ -1294,12 +1202,11 @@ Hindari membungkus JSON dengan format markdown backtick, kembalikan teks JSON me
 
             document.getElementById('image-loading').classList.remove('hidden');
 
-            // Model Realisme Dokumenter Tanpa Watermark
-            const encodedPrompt = encodeURIComponent("A magnificent 3D realistic gold coin logo, shiny metallic texture, embossed cute star symbol in the center, glowing magical light effects, isolated on a clean black background, studio lighting, hyper-detailed 8k photo");
+            const enrichedPrompt = `A high-quality, friendly realistic photography of: ${promptInput}, vivid colors, beautiful studio lighting, highly detailed, safe for children, 8k resolution, no text, no watermarks`;
+            const encodedPrompt = encodeURIComponent(enrichedPrompt);
             const randomSeed = Math.floor(Math.random() * 999999);
-            const imageUrl = `https://image.pollinations.ai/p/${encodedPrompt}?width=1024&height=1024&seed=${randomSeed}&model=flux&nologo=true`;
-
-                console.log(imageUrl);
+            
+            const imageUrl = `https://image.pollinations.ai/p/${encodedPrompt}?width=600&height=600&seed=${randomSeed}&model=flux&nologo=true`;
 
             const img = new Image();
             img.crossOrigin = "anonymous";
@@ -1307,12 +1214,11 @@ Hindari membungkus JSON dengan format markdown backtick, kembalikan teks JSON me
 
             img.onload = function() {
                 document.getElementById('image-loading').classList.add('hidden');
-                
                 canvasBgImage = img;
                 clearCanvasOnly();
                 
                 playSound('success');
-                showToast("Tadaaa! Foto realistis sudah siap! Ayo coret & hias dengan sentuhan kreatifmu!", "📸");
+                showToast("Tadaaa! Foto realistis sudah siap! Ayo coret & hias ya! 📸", "🎉");
                 addXP(40);
                 unlockBadge('creative-mind');
                 triggerConfetti();
@@ -1322,30 +1228,28 @@ Hindari membungkus JSON dengan format markdown backtick, kembalikan teks JSON me
                 document.getElementById('image-loading').classList.add('hidden');
                 showToast("Jaringan penuh, gagal memuat foto realistis.", "⚠️");
                 playSound('error');
+                addCoins(10);
             };
         }
 
         function saveImageToGallery() {
             playSound('click');
             if (!creativeCanvas) return;
-
             try {
                 const dataUrl = creativeCanvas.toDataURL('image/png');
-                
                 const link = document.createElement('a');
                 link.href = dataUrl;
                 link.download = 'Kreativitas_Kiko_AI.png';
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
-                showToast("Karya hebatmu berhasil disimpan di galeri perantimu! 🎨", "💾");
+                showToast("Karya hebatmu berhasil disimpan di galeri! 🎨", "💾");
             } catch (err) {
-                console.error(err);
                 showToast("Gagal menyimpan gambar karena batasan keamanan peramban.", "⚠️");
             }
         }
 
-        // --- ZONA 6: MINI GAME BALON ANGKA ---
+        // --- ZONA 6: BALON ANGKA GAMEPLAY ---
         let gameScore = 0;
         let gameLives = 3;
         let gameInterval = null;
@@ -1388,58 +1292,33 @@ Hindari membungkus JSON dengan format markdown backtick, kembalikan teks JSON me
             document.getElementById('balloons-container').innerHTML = '';
 
             generateMathEquation();
-
             clearInterval(balloonSpawnInterval);
             balloonSpawnInterval = setInterval(spawnBalloon, 1400);
-
             clearInterval(gameInterval);
             gameInterval = setInterval(updateGamePhysics, 30);
         }
 
         function spawnBalloon() {
             if (!gameActive) return;
-
             const container = document.getElementById('balloons-container');
             const balloon = document.createElement('div');
             
             const isCorrectAnswer = Math.random() > 0.65;
-            let value = 0;
-            if (isCorrectAnswer) {
-                value = currentTargetAnswer;
-            } else {
-                value = currentTargetAnswer + (Math.floor(Math.random() * 4) + 1) * (Math.random() > 0.5 ? 1 : -1);
-                if (value < 0) value = Math.floor(Math.random() * 10);
-            }
+            let value = isCorrectAnswer ? currentTargetAnswer : currentTargetAnswer + (Math.floor(Math.random() * 4) + 1) * (Math.random() > 0.5 ? 1 : -1);
+            if (value < 0) value = Math.floor(Math.random() * 10);
 
-            const colors = [
-                'from-pink-500 to-rose-400',
-                'from-cyan-500 to-blue-400',
-                'from-yellow-400 to-amber-300',
-                'from-purple-500 to-indigo-400',
-                'from-emerald-400 to-teal-300'
-            ];
+            const colors = ['from-pink-500 to-rose-400', 'from-cyan-500 to-blue-400', 'from-yellow-400 to-amber-300', 'from-purple-500 to-indigo-400'];
             const randomColor = colors[Math.floor(Math.random() * colors.length)];
             const startX = Math.random() * (container.clientWidth - 50);
             
-            balloon.className = `absolute bottom-[-60px] w-12 h-16 rounded-full bg-gradient-to-b ${randomColor} shadow-md flex items-center justify-center text-white font-black text-sm cursor-pointer select-none border border-white/20 transition-transform hover:scale-105`;
+            balloon.className = `absolute bottom-[-60px] w-12 h-16 rounded-full bg-gradient-to-b ${randomColor} shadow-md flex items-center justify-center text-white font-black text-sm cursor-pointer select-none border border-white/20`;
             balloon.style.left = `${startX}px`;
-            balloon.dataset.val = value;
             balloon.dataset.correct = isCorrectAnswer ? "true" : "false";
-            balloon.innerHTML = `
-                ${value}
-                <div class="absolute bottom-[-10px] left-1/2 -translate-x-1/2 w-0.5 h-3.5 bg-slate-400"></div>
-            `;
+            balloon.innerHTML = `${value}<div class="absolute bottom-[-10px] left-1/2 -translate-x-1/2 w-0.5 h-3.5 bg-slate-400"></div>`;
 
-            const handlePop = () => {
-                if (!gameActive) return;
-                popBalloon(balloon);
-            };
-
+            const handlePop = () => { if (gameActive) popBalloon(balloon); };
             balloon.addEventListener('mousedown', handlePop);
-            balloon.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                handlePop();
-            });
+            balloon.addEventListener('touchstart', (e) => { e.preventDefault(); handlePop(); });
 
             container.appendChild(balloon);
         }
@@ -1447,18 +1326,11 @@ Hindari membungkus JSON dengan format markdown backtick, kembalikan teks JSON me
         function popBalloon(balloon) {
             const isCorrect = (balloon.dataset.correct === "true");
             balloon.remove();
-
             if (isCorrect) {
                 gameScore += 10;
                 document.getElementById('game-score').innerText = gameScore;
                 playSound('success');
-                
-                confetti({
-                    particleCount: 15,
-                    spread: 40,
-                    origin: { y: 0.5 }
-                });
-
+                confetti({ particleCount: 15, spread: 40, origin: { y: 0.5 } });
                 generateMathEquation();
             } else {
                 triggerWrongFeedback();
@@ -1468,34 +1340,25 @@ Hindari membungkus JSON dengan format markdown backtick, kembalikan teks JSON me
         function triggerWrongFeedback() {
             gameLives--;
             playSound('error');
-            
             let heartString = "";
-            for (let i = 0; i < 3; i++) {
-                heartString += (i < gameLives) ? "❤️" : "🖤";
-            }
+            for (let i = 0; i < 3; i++) heartString += (i < gameLives) ? "❤️" : "🖤";
             document.getElementById('game-lives').innerText = heartString;
-
-            if (gameLives <= 0) {
-                endGame();
-            }
+            if (gameLives <= 0) endGame();
         }
 
         function updateGamePhysics() {
             if (!gameActive) return;
-
             const balloons = document.querySelectorAll('#balloons-container > div');
             const arenaHeight = document.getElementById('game-arena').clientHeight;
 
             balloons.forEach(balloon => {
                 const currentBottom = parseFloat(balloon.style.bottom || -60);
-                const speed = 2.2 + (gameScore * 0.05); // Kecepatan meningkat bertahap
+                const speed = 2.2 + (gameScore * 0.05);
                 const nextBottom = currentBottom + speed;
 
                 if (nextBottom >= arenaHeight - 4) {
                     balloon.remove();
-                    if (balloon.dataset.correct === "true") {
-                        triggerWrongFeedback();
-                    }
+                    if (balloon.dataset.correct === "true") triggerWrongFeedback();
                 } else {
                     balloon.style.bottom = `${nextBottom}px`;
                 }
@@ -1506,19 +1369,15 @@ Hindari membungkus JSON dengan format markdown backtick, kembalikan teks JSON me
             gameActive = false;
             clearInterval(gameInterval);
             clearInterval(balloonSpawnInterval);
-
             document.getElementById('game-over-screen').classList.remove('hidden');
             document.getElementById('game-end-score').innerText = gameScore;
             
             const finalCoins = Math.floor(gameScore / 2);
             addCoins(finalCoins);
             addXP(gameScore);
-
             document.getElementById('game-end-coins').innerText = `+${finalCoins} 🪙`;
 
-            if (gameScore >= 100) {
-                unlockBadge('math-genius');
-            }
+            if (gameScore >= 100) unlockBadge('math-genius');
         }
 
         function exitGame() {
