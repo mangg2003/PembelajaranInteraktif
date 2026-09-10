@@ -1,11 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Halaman Utama (Dashboard) -->
   <url>
-    <loc>https://belajarbarengkiko.netlify.app/</loc>
-    <priority>1.00</priority>
+    <loc>https://edulabkids.netlify.app/</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
   </url>
+
+  <!-- Bagian Kuis Pintar -->
   <url>
-    <loc>https://belajarbarengkiko.netlify.app/about</loc>
-    <priority>0.80</priority>
+    <loc>https://edulabkids.netlify.app/#quiz</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Bagian Cerita AR Edulab -->
+  <url>
+    <loc>https://edulabkids.netlify.app/#story</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Bagian Kreasi Kanvas Ajaib -->
+  <url>
+    <loc>https://edulabkids.netlify.app/#creative</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Bagian Mini Game Balon Matematika -->
+  <url>
+    <loc>https://edulabkids.netlify.app/#game</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Bagian Teman Belajar Edi -->
+  <url>
+    <loc>https://edulabkids.netlify.app/#chat-edi</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 </urlset>
